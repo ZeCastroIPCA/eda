@@ -1,0 +1,10 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "stdio.h": "c",
+        "handlelogin.h": "c",
+        "menus.h": "c",
+        "string.h": "c",
+        "registo.h": "c"
+    }
+}

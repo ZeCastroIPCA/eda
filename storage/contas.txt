@@ -1,0 +1,4 @@
+4;cliente;cliente3@email.com;123;Sergio;Rua;123;0.000000;0
+3;cliente;cliente2@email.com;123;Tiago;Rua;123;2.000000;0
+2;cliente;cliente@email.com;123;Ze;Rua;123;0.125000;0
+1;gestor;gestor@email.com;123;n/a;n/a;n/a;0.000000;0
