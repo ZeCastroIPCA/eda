@@ -1,9 +1,9 @@
 #pragma once
 #include <stdio.h>
 
-int menuGestorClientes(Conta *contas);
-int menuGestorGestores();
-int menuGestorMeios();
-Conta *menuGestorPrincipal(Conta *conta);
-Conta *menuPrincipal(Conta *conta);
-Conta *menuCliente(Conta *contas, Conta *conta);
+void menuGestorClientes(Conta *contas);
+void menuGestorGestores();
+void menuGestorMeios();
+void menuGestorPrincipal(Conta *conta);
+void menuPrincipal(Conta *conta);
+void menuCliente(Conta *contas, Conta *conta);

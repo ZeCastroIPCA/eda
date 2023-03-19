@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include "../contas/registo.h"
-#include "../login/handleLogin.h"
+#include "../contas/conta/conta.h"
+#include "../contas/auth/auth.h"
+#include "menus.h"
 
-Conta *menuCliente(Conta *contas, Conta *conta)
+void menuCliente(Conta *contas, Conta *conta)
 {
 	int op, conta_op;
 	while (op != 0)
@@ -25,19 +26,25 @@ Conta *menuCliente(Conta *contas, Conta *conta)
 			// renting ? alugarMeio() : terminarAluguer();
 			break;
 		case 2:
-			//carregarSaldo(conta);
+			// carregarSaldo(conta);
 			break;
 		case 3:
 			printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", conta->codigo);
 			scanf("%d", &conta_op);
-			conta_op ? ((contas = removerConta(contas, conta->codigo)) && printf("\nA sua conta foi apagada com sucesso!\n\n")), op = 0 : printf("\nA sua conta não foi apagada!\n\n");
+			if (conta_op)
+			{
+				removerConta(contas, conta->codigo);
+				printf("\nA sua conta foi apagada com sucesso!\n\n");
+				break;
+			}
+			op = 0;
+			printf("\nA sua conta não foi apagada!\n\n");
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n\n");
 			break;
 		}
 	};
-	return (contas);
 }
 
 void menuGestorGestores()
@@ -76,7 +83,6 @@ void menuGestorClientes(Conta *contas)
 	int id;
 	do
 	{
-		contas = lerConta();
 		printf("\n------------------------------\n");
 		printf("|     Gestão de Clientes     |\n");
 		printf("------------------------------\n");
@@ -106,11 +112,10 @@ void menuGestorClientes(Conta *contas)
 			op != 0 && printf("\nOpção inválida!\n\n");
 			break;
 		}
-		guardarContas(contas);
 	} while (op != 0);
 }
 
-Conta *menuGestorPrincipal(Conta *contas)
+void menuGestorPrincipal(Conta *contas)
 {
 	int op;
 	do
@@ -142,7 +147,7 @@ Conta *menuGestorPrincipal(Conta *contas)
 	} while (op != 0);
 }
 
-Conta *menuPrincipal(Conta *contas)
+void menuPrincipal(Conta *contas)
 {
 	int op;
 	do
@@ -158,15 +163,14 @@ Conta *menuPrincipal(Conta *contas)
 		switch (op)
 		{
 		case 1:
-			contas = handleLogin(contas);
+			handleLogin(contas);
 			break;
 		case 2:
-			contas = handleRegisto(contas);
+			handleRegisto(contas);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n\n");
 			break;
 		}
 	} while (op != 0);
-	return (contas);
 }

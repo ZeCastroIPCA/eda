@@ -5,6 +5,9 @@
         "handlelogin.h": "c",
         "menus.h": "c",
         "string.h": "c",
-        "registo.h": "c"
+        "registo.h": "c",
+        "stdbool.h": "c",
+        "auth.h": "c",
+        "conta.h": "c"
     }
 }

@@ -1,14 +1,14 @@
 #include <stdio.h>
-#include "meios/meio.h"
-#include "contas/registo.h"
+#include "contas/auth/auth.h"
 #include "menus/menus.h"
-#include "login/handleLogin.h"
+#include "contas/conta/conta.h"
+#include "manager/fileManager.h"
 
 int main()
 {
 	Conta *contas = NULL; // Lista ligada vazia
-	contas = lerConta();
-	contas = menuPrincipal(contas);
+	contas = lerContas();
+	menuPrincipal(contas);
 	guardarContas(contas);
 	return (0);
 }
