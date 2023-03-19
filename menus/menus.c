@@ -110,7 +110,7 @@ void menuGestorClientes(Conta *contas)
 	} while (op != 0);
 }
 
-void menuGestorPrincipal(Conta *contas)
+Conta *menuGestorPrincipal(Conta *contas)
 {
 	int op;
 	do

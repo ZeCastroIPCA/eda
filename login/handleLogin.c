@@ -32,7 +32,7 @@ Conta *handleLogin(Conta *contas)
     }
     else if (strcmp(conta->tipo, "gestor") == 0)
     {
-        menuGestorPrincipal(contas);
+        contas = menuGestorPrincipal(contas);
     }
     return (contas);
 }
