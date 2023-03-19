@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "auth.h"
+#include "../../menus/menus.h"
+#include "../conta/conta.h"
+#include "../../meios/meio.h"
 
 // Verificar se o email e a password estão corretos e se o utilizador é um cliente ou gestor
-void handleLogin(Conta *contas)
+void handleLogin(Conta *contas, Meio *meios)
 {
     Conta *conta = NULL;
     char email[50], password[50];
@@ -25,16 +28,16 @@ void handleLogin(Conta *contas)
 
     if (strcmp(conta->tipo, "cliente") == 0)
     {
-        menuCliente(contas, conta);
+        menuCliente(contas, conta, meios);
     }
     else if (strcmp(conta->tipo, "gestor") == 0)
     {
-        menuGestorPrincipal(contas);
+        menuGestorPrincipal(contas, meios);
     }
 }
 
 // Criar uma nova conta cliente
-void handleRegisto(Conta *contas)
+Conta *handleRegisto(Conta* contas)
 {
     char email[50], password[50], nome[50], morada[50], nif[9];
     printf("Email: ");
@@ -49,7 +52,7 @@ void handleRegisto(Conta *contas)
     scanf("%[^\n]s", morada);
     printf("NIF: ");
     scanf("%s", nif);
-    contas = registo(contas, email, password, nome, morada, nif);
+    return registo(contas, email, password, nome, morada, nif);
 }
 
 // Verificar se o email e a password estão corretos
@@ -83,7 +86,7 @@ Conta *registo(Conta *inicio, char email[], char pass[], char nome[], char morad
         strcpy(novo->morada, morada);
         strcpy(novo->nif, nif);
         novo->saldo = 0;
-        novo->renting = false;
+        novo->meio_id = 0;
         novo->seguinte = inicio;
         printf("Conta criada com sucesso!\n");
         return (novo);

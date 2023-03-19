@@ -1,6 +1,7 @@
+#pragma once
 #include <stdio.h>
 
-typedef struct c
+typedef struct contas
 {
     int codigo; // código da conta
     char tipo[50]; // tipo de conta: cliente ou gestor
@@ -10,8 +11,8 @@ typedef struct c
     char morada[50]; // morada do cliente
     char nif[9]; // nif do cliente
     float saldo; // saldo da conta do cliente
-    int renting; // estado do renting do cliente
-    struct c *seguinte;
+    int meio_id; // id do meio associado ao cliente
+    struct contas *seguinte;
 } Conta;
 
 void removerConta(Conta *contas, int cod);

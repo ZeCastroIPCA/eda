@@ -8,6 +8,8 @@
         "registo.h": "c",
         "stdbool.h": "c",
         "auth.h": "c",
-        "conta.h": "c"
+        "conta.h": "c",
+        "meio.h": "c",
+        "aluguer.h": "c"
     }
 }

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "conta.h"
-#include "../manager/fileManager.h"
+#include "../../manager/fileManager.h"
 
 // ler contas
 Conta *lerContas()
@@ -11,7 +11,7 @@ Conta *lerContas()
   int cod;
   float saldo;
   char tipo[50], email[50], pass[50], nome[50], morada[50], nif[9];
-  int renting;
+  int meio_id;
   Conta *aux = NULL;
   fp = fopen("./storage/contas.txt", "r");
   if (fp != NULL)
@@ -22,8 +22,8 @@ Conta *lerContas()
       // printf("Contas disponíveis:\n");
       while (!feof(fp))
       {
-        fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d \n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &renting);
-        aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, renting);
+        fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d \n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &meio_id);
+        aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, meio_id);
         novo = aux;
         // printf("%d %s %s %s %s %s %s %.2f %d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->renting);
       }
@@ -39,13 +39,13 @@ void removerConta(Conta *inicio, int cod)
   if (atual == NULL)
   {
     printf("Não existem contas registadas!\n");
-    return 0;
+    return;
   }
   if (atual->codigo == cod) // remoção do 1º registo
   {
     aux = atual->seguinte;
     free(atual);
-    return 0;
+    return;
   }
   while ((atual != NULL) && (atual->codigo != cod))
   {
@@ -55,7 +55,7 @@ void removerConta(Conta *inicio, int cod)
   if (atual == NULL)
   {
     printf("Conta não encontrada!\n");
-    return 0;
+    return;
   }
   anterior->seguinte = atual->seguinte;
   free(atual);
@@ -73,7 +73,7 @@ void guardarContas(Conta *inicio)
     {
       while (aux != NULL)
       {
-        fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->renting);
+        fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
         aux = aux->seguinte;
       }
     }
@@ -88,13 +88,13 @@ void listarContas(Conta *contas)
 {
   printf("\n-- LISTA DE CLIENTES ------------------\n");
   printf("---------------------------------------\n");
-  printf("| ID | Nome         | Saldo | Aluguer |\n");
+  printf("| ID | Nome         | Saldo | ID Meio |\n");
   printf("---------------------------------------\n");
   while (contas != NULL)
   {
     if (!strcmp(contas->tipo, "cliente"))
     {
-      printf("| %-2d | %-12s | %05.2f | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->renting);
+      printf("| %-2d | %-12s | %05.2f | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
     }
     contas = contas->seguinte;
   }

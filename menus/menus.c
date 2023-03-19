@@ -4,17 +4,18 @@
 #include <stdbool.h>
 #include "../contas/conta/conta.h"
 #include "../contas/auth/auth.h"
+#include "../meios/meio.h"
 #include "menus.h"
 
-void menuCliente(Conta *contas, Conta *conta)
+void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
-	int op, conta_op;
+	int op, conta_op, aluguer_op, meio_cod;
 	while (op != 0)
 	{
 		printf("-------------------------\n");
 		printf("|     Bem vindo %-7s |\n|     Saldo: %05.2f      |\n", conta->nome, conta->saldo);
 		printf("-------------------------\n");
-		conta->renting ? printf("1 - Terminar aluguer atual\n") : printf("1 - Alugar um meio elétrico\n");
+		conta->meio_id ? printf("1 - Terminar aluguer atual\n") : printf("1 - Alugar um meio elétrico\n");
 		printf("2 - Carregar saldo\n");
 		printf("3 - Apagar conta\n");
 		printf("0 - Voltar\n");
@@ -23,10 +24,23 @@ void menuCliente(Conta *contas, Conta *conta)
 		switch (op)
 		{
 		case 1:
-			// renting ? alugarMeio() : terminarAluguer();
+			if(conta->meio_id != 0){
+				printf("Pretente terminar o aluguer atual?\n(1 - Sim | 0 - Não):");
+				scanf("%d", &aluguer_op);
+				if (aluguer_op)
+				{
+					conta->meio_id = 0;
+					break;
+				}
+			}
+			printf("Qual o meio que pretende alugar?\nID do meio:");
+			scanf("%d", &conta->meio_id);
+			printf("\nMeio alugado com sucesso!\n");
 			break;
 		case 2:
-			// carregarSaldo(conta);
+			printf("Carregar saldo:");
+			scanf("%f", &conta->saldo);
+			printf("\nSaldo carregado com sucesso!\n");
 			break;
 		case 3:
 			printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", conta->codigo);
@@ -47,7 +61,7 @@ void menuCliente(Conta *contas, Conta *conta)
 	};
 }
 
-void menuGestorGestores()
+void menuGestorGestores(Conta *contas)
 {
 	int op;
 	printf("\n------------------------------\n");
@@ -62,7 +76,7 @@ void menuGestorGestores()
 	scanf("%d", &op);
 }
 
-void menuGestorMeios()
+void menuGestorMeios(Meio *meios)
 {
 	int op;
 	printf("\n------------------------------\n");
@@ -115,7 +129,7 @@ void menuGestorClientes(Conta *contas)
 	} while (op != 0);
 }
 
-void menuGestorPrincipal(Conta *contas)
+void menuGestorPrincipal(Conta *contas, Meio *meios)
 {
 	int op;
 	do
@@ -132,13 +146,13 @@ void menuGestorPrincipal(Conta *contas)
 		switch (op)
 		{
 		case 1:
-			menuGestorMeios();
+			menuGestorMeios(meios);
 			break;
 		case 2:
 			menuGestorClientes(contas);
 			break;
 		case 3:
-			menuGestorGestores();
+			menuGestorGestores(contas);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n\n");
@@ -147,7 +161,7 @@ void menuGestorPrincipal(Conta *contas)
 	} while (op != 0);
 }
 
-void menuPrincipal(Conta *contas)
+Conta *menuPrincipal(Conta *contas, Meio *meios)
 {
 	int op;
 	do
@@ -163,14 +177,15 @@ void menuPrincipal(Conta *contas)
 		switch (op)
 		{
 		case 1:
-			handleLogin(contas);
+			handleLogin(contas, meios);
 			break;
 		case 2:
-			handleRegisto(contas);
+			contas = handleRegisto(contas);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n\n");
 			break;
 		}
 	} while (op != 0);
+	return (contas);
 }

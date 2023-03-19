@@ -9,6 +9,7 @@ typedef struct registo
     float autonomia;
     int idCliente;
     float custo;
+    int disponivel;
     char geoCode[100];
     struct registo *seguinte;
 } Meio;

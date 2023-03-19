@@ -5,7 +5,7 @@
 #include "fileManager.h"
 
 // inserir conta no ficheiro
-Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int renting)
+Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)
 {
   if (!existeConta(inicio, cod))
   {
@@ -30,7 +30,7 @@ Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char 
         strcpy(novo->nif, "n/a");
         novo->saldo = 0;
       }
-      novo->renting = 0;
+      novo->meio_id = 0;
       novo->seguinte = inicio;
       return (novo);
     }
@@ -40,4 +40,23 @@ Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char 
   
 
   return (inicio);
+}
+
+int saveContasBin(Conta *inicio)
+{
+  FILE *fp;
+  fp = fopen("./storagebin/contas.bin", "wb");
+  if (fp != NULL)
+  {
+    Conta *aux = inicio;
+    while (aux != NULL)
+    {
+      fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
+      aux = aux->seguinte;
+    }
+    fclose(fp);
+    return (1);
+  }
+  else
+    return (0);
 }
