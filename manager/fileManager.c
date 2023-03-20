@@ -22,6 +22,7 @@ Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char 
         strcpy(novo->morada, morada);
         strcpy(novo->nif, nif);
         novo->saldo = saldo;
+        novo->meio_id = meio_id;
       }
       else
       {
@@ -29,8 +30,9 @@ Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char 
         strcpy(novo->morada, "n/a");
         strcpy(novo->nif, "n/a");
         novo->saldo = 0;
+        novo->meio_id = 0;
       }
-      novo->meio_id = 0;
+
       novo->seguinte = inicio;
       return (novo);
     }

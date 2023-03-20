@@ -10,6 +10,7 @@
 void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
 	int op, conta_op, aluguer_op, meio_cod;
+	float saldoCarregar;
 	while (op != 0)
 	{
 		printf("-------------------------\n");
@@ -30,20 +31,28 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				if (aluguer_op)
 				{
 					conta->meio_id = 0;
-					break;
 				}
+				break;
 			}
 			printf("Qual o meio que pretende alugar?\nID do meio:");
-			scanf("%d", &conta->meio_id);
-			printf("\nMeio alugado com sucesso!\n");
+			scanf("%d", &meio_cod);
+			if (existeMeio(meios, meio_cod))
+			{
+				conta->meio_id = meio_cod;
+				conta->saldo -= 0.5;
+				printf("\nMeio alugado com sucesso!\n");
+				break;
+			}
+			printf("\nO meio que pretende alugar não existe!\n");
 			break;
 		case 2:
 			printf("Carregar saldo:");
-			scanf("%f", &conta->saldo);
+			scanf("%f", &saldoCarregar);
+			conta->saldo += saldoCarregar;
 			printf("\nSaldo carregado com sucesso!\n");
 			break;
 		case 3:
-			printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", conta->codigo);
+			printf("\nTem a certeza que pretende apagar a sua conta?\n(1 - Sim | 0 - Não):");
 			scanf("%d", &conta_op);
 			if (conta_op)
 			{
@@ -51,7 +60,6 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				printf("\nA sua conta foi apagada com sucesso!\n\n");
 				break;
 			}
-			op = 0;
 			printf("\nA sua conta não foi apagada!\n\n");
 			break;
 		default:
