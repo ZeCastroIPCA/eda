@@ -60,6 +60,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				printf("\nA sua conta foi apagada com sucesso!\n\n");
 				break;
 			}
+			op = 0;
 			printf("\nA sua conta não foi apagada!\n\n");
 			break;
 		default:
