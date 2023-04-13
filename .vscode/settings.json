@@ -10,6 +10,8 @@
         "auth.h": "c",
         "conta.h": "c",
         "meio.h": "c",
-        "aluguer.h": "c"
+        "aluguer.h": "c",
+        "__locale": "c",
+        "locale": "c"
     }
 }

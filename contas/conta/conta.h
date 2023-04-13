@@ -16,6 +16,7 @@ typedef struct contas
 } Conta;
 
 void removerConta(Conta *contas, int cod);
+void alterarConta(Conta *contas, int cod);
 Conta *lerContas();
 void guardarContas(Conta *contas);
 void listarContas(Conta *contas);

@@ -64,7 +64,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 			printf("\nA sua conta não foi apagada!\n\n");
 			break;
 		default:
-			op != 0 && printf("\nOpção inválida!\n\n");
+			op != 0 && printf("\nOpção inválida!\n");
 			break;
 		}
 	};
@@ -127,22 +127,7 @@ void menuGestorClientes(Conta *contas)
 		case 3:
 			printf("\nID a alterar:");
 			scanf("%d", &id);
-			if (existeConta(contas, id) == 0)
-			{
-				printf("\nO cliente que pretende alterar não existe!\n");
-				break;
-			}			
-			// printf("\nEmail: ");
-			// scanf("%s", &contas[id].email);
-			// printf("\nPassword: ");
-			// scanf("%s", &contas[id].password);
-			// printf("\nNome: ");
-			// scanf("%s", &contas[id].nome);
-			// printf("\nMorada: ");
-			// scanf("%s", &contas[id].morada);
-			// printf("\nNIF: ");
-			// scanf("%s", &contas[id].nif);
-			// printf("\nInformações do cliente %d alteradas com sucesso!\n", id);
+			alterarConta(contas, id);
 			break;
 		case 4:
 			printf("\nID a eliminar:");
@@ -150,7 +135,7 @@ void menuGestorClientes(Conta *contas)
 			removerConta(contas, id);
 			break;
 		default:
-			op != 0 && printf("\nOpção inválida!\n\n");
+			op != 0 && printf("\nOpção inválida!\n");
 			break;
 		}
 	} while (op != 0);
@@ -182,7 +167,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 			menuGestorGestores(contas);
 			break;
 		default:
-			op != 0 && printf("\nOpção inválida!\n\n");
+			op != 0 && printf("\nOpção inválida!\n");
 			break;
 		}
 	} while (op != 0);
@@ -210,7 +195,7 @@ Conta *menuPrincipal(Conta *contas, Meio *meios)
 			contas = handleRegisto(contas);
 			break;
 		default:
-			op != 0 && printf("\nOpção inválida!\n\n");
+			op != 0 && printf("\nOpção inválida!\n");
 			break;
 		}
 	} while (op != 0);

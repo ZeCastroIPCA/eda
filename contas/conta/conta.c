@@ -32,11 +32,40 @@ Conta *lerContas()
   }
   return (aux);
 }
-// Remover uma conta a partir do seu código
-void removerConta(Conta *inicio, int cod)
+
+// Alterar uma conta a partir do seu código
+void alterarConta(Conta *contas, int cod)
 {
-  //TODO - bug fix: ao remover a conta no mesmo ciclo em que cria a conta, vai guardar lixo
-  Conta *anterior = inicio, *atual = inicio, *aux;
+  Conta *aux = contas;
+  while ((aux != NULL) && (aux->codigo != cod))
+  {
+    aux = aux->seguinte;
+  }
+  if (aux == NULL)
+  {
+    printf("Conta com ID %d não encontrada!\n", cod);
+    return;
+  }
+  printf("\nEmail: ");
+  scanf("%s", aux->email);
+  printf("Password: ");
+  scanf("%s", aux->password);
+  printf("Nome: ");
+  scanf("%s", aux->nome);
+  printf("Morada: ");
+  scanf("%s", aux->morada);
+  printf("NIF: ");
+  scanf("%s", aux->nif);
+
+  contas = aux;
+  printf("\nInformações do cliente %d alteradas com sucesso!\n", cod);
+}
+
+// Remover uma conta a partir do seu código
+void removerConta(Conta *contas, int cod)
+{
+  // TODO - bug fix: ao remover a conta no mesmo ciclo em que cria a conta, vai guardar lixo
+  Conta *anterior = contas, *atual = contas, *aux;
   if (atual == NULL)
   {
     printf("Não existem contas registadas!\n");
@@ -44,15 +73,12 @@ void removerConta(Conta *inicio, int cod)
   }
   if (atual->codigo == cod) // remoção do 1º registo
   {
-    printf("first, ID: %d\n", atual->codigo);
     aux = atual->seguinte;
     free(atual);
-    printf("second, ID: %d\n", atual->codigo);
     return;
   }
   while ((atual != NULL) && (atual->codigo != cod))
   {
-    printf("ID: %d\n", atual->codigo);
     anterior = atual;
     atual = atual->seguinte;
   }
@@ -66,13 +92,13 @@ void removerConta(Conta *inicio, int cod)
 }
 
 // guardar contas no ficheiro
-void guardarContas(Conta *inicio)
+void guardarContas(Conta *contas)
 {
   FILE *fp;
   fp = fopen("./storage/contas.txt", "w");
   if (fp != NULL)
   {
-    Conta *aux = inicio;
+    Conta *aux = contas;
     if (aux != NULL)
     {
       while (aux != NULL)
@@ -105,7 +131,7 @@ void listarContas(Conta *contas)
   printf("---------------------------------------\n");
 }
 
-// Determinar existência do 'codigo' na lista ligada 'inicio'
+// Determinar existência do 'codigo' na lista ligada 'contas'
 // devolve o código do último registo + 1 (ou seja, o próximo a ser registado) se existir ou 0 caso contrário
 int existeConta(Conta *contas, int cod)
 {
@@ -118,6 +144,7 @@ int existeConta(Conta *contas, int cod)
   return (0);
 }
 
+// Determinar existência do 'email' inserido na lista ligada 'contas'
 int verifyEmail(Conta *contas, char email[])
 {
   while (contas != NULL)
