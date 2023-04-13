@@ -20,3 +20,4 @@ Conta *lerContas();
 void guardarContas(Conta *contas);
 void listarContas(Conta *contas);
 int existeConta(Conta *contas, int cod);
+int verifyEmail(Conta *contas, char email[]);

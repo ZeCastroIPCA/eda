@@ -34,7 +34,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				}
 				break;
 			}
-			printf("Qual o meio que pretende alugar?\nID do meio:");
+			printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
 			scanf("%d", &meio_cod);
 			if (existeMeio(meios, meio_cod))
 			{
@@ -52,15 +52,15 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 			printf("\nSaldo carregado com sucesso!\n");
 			break;
 		case 3:
-			printf("\nTem a certeza que pretende apagar a sua conta?\n(1 - Sim | 0 - Não):");
+			printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", conta->codigo);
 			scanf("%d", &conta_op);
 			if (conta_op)
 			{
 				removerConta(contas, conta->codigo);
-				printf("\nA sua conta foi apagada com sucesso!\n\n");
+				printf("\nA sua conta foi apagada com sucesso!\n");
+				op = 0;
 				break;
 			}
-			op = 0;
 			printf("\nA sua conta não foi apagada!\n\n");
 			break;
 		default:
@@ -125,6 +125,24 @@ void menuGestorClientes(Conta *contas)
 			listarContas(contas);
 			break;
 		case 3:
+			printf("\nID a alterar:");
+			scanf("%d", &id);
+			if (existeConta(contas, id) == 0)
+			{
+				printf("\nO cliente que pretende alterar não existe!\n");
+				break;
+			}			
+			// printf("\nEmail: ");
+			// scanf("%s", &contas[id].email);
+			// printf("\nPassword: ");
+			// scanf("%s", &contas[id].password);
+			// printf("\nNome: ");
+			// scanf("%s", &contas[id].nome);
+			// printf("\nMorada: ");
+			// scanf("%s", &contas[id].morada);
+			// printf("\nNIF: ");
+			// scanf("%s", &contas[id].nif);
+			// printf("\nInformações do cliente %d alteradas com sucesso!\n", id);
 			break;
 		case 4:
 			printf("\nID a eliminar:");

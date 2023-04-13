@@ -35,6 +35,7 @@ Conta *lerContas()
 // Remover uma conta a partir do seu código
 void removerConta(Conta *inicio, int cod)
 {
+  //TODO - bug fix: ao remover a conta no mesmo ciclo em que cria a conta, vai guardar lixo
   Conta *anterior = inicio, *atual = inicio, *aux;
   if (atual == NULL)
   {
@@ -43,12 +44,15 @@ void removerConta(Conta *inicio, int cod)
   }
   if (atual->codigo == cod) // remoção do 1º registo
   {
+    printf("first, ID: %d\n", atual->codigo);
     aux = atual->seguinte;
     free(atual);
+    printf("second, ID: %d\n", atual->codigo);
     return;
   }
   while ((atual != NULL) && (atual->codigo != cod))
   {
+    printf("ID: %d\n", atual->codigo);
     anterior = atual;
     atual = atual->seguinte;
   }
@@ -109,6 +113,17 @@ int existeConta(Conta *contas, int cod)
   {
     if (contas->codigo == cod)
       return (contas->codigo + 1);
+    contas = contas->seguinte;
+  }
+  return (0);
+}
+
+int verifyEmail(Conta *contas, char email[])
+{
+  while (contas != NULL)
+  {
+    if (!strcmp(contas->email, email))
+      return (1);
     contas = contas->seguinte;
   }
   return (0);

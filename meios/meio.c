@@ -47,7 +47,7 @@ Meio *lerMeios()
         fscanf(fp, "%d;%f;%f;%s\n", &cod, &bat, &aut, tipo);
         aux = inserirMeio(aux, cod, tipo, bat, aut);
         novo = aux;
-        printf("Meios: %d %s %.2f %.2f\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia);
+        //printf("Meios: %d %s %.2f %.2f\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia);
       }
       fclose(fp);
     }
