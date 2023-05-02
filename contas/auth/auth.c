@@ -36,24 +36,46 @@ void handleLogin(Conta *contas, Meio *meios)
   }
 }
 
-// Criar uma nova conta cliente
-void handleRegisto(Conta *contas)
+// Criar uma nova conta
+void handleRegisto(Conta *contas, int who)
 {
-  char email[50], password[50], nome[50], morada[50], nif[9];
+  char email[50], password[50], nome[50], morada[50], nif[9], tipo[50];
+  int tipoInt = 456; // 456 é um valor aleatório e inválido para o tipo de conta
+  if (who == 1)
+  {
+    do
+    {
+      if (tipoInt != 456 && tipoInt != 1 && tipoInt != 2)
+        printf("\nTipo de conta inválido!\nTente outra vez.\n\n");
+
+      printf("Tipo de conta\n(1 - Cliente | 2 - Gestor):");
+      scanf("%d", &tipoInt);
+    } while (tipoInt != 456 && tipoInt != 1 && tipoInt != 2);
+  }
+  strcpy(tipo, tipoInt == 2 ? "gestor" : "cliente");
   printf("Email: ");
   scanf("%s", email);
   printf("Password: ");
   scanf("%s", password);
   getchar();
-  printf("Nome: ");
-  scanf("%[^\n]s", nome);
-  getchar();
-  printf("Morada: ");
-  scanf("%[^\n]s", morada);
-  printf("NIF: ");
-  scanf("%s", nif);
-  
-  registo(contas, email, password, nome, morada, nif);
+  if (tipoInt == 1)
+  {
+    printf("Nome: ");
+    scanf("%[^\n]s", nome);
+    getchar();
+    printf("Morada: ");
+    scanf("%[^\n]s", morada);
+    printf("NIF: ");
+    scanf("%s", nif);
+  }
+  else
+  {
+    strcpy(nome, "n/a");
+    strcpy(morada, "n/a");
+    strcpy(nif, "n/a");
+  }
+
+  registo(contas, email, password, nome, morada, nif, tipo);
 }
 
 // Verificar se o email e a password estão corretos
@@ -69,7 +91,7 @@ Conta *login(Conta *contas, char email[], char pass[])
 }
 
 // Criar uma nova conta
-void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[])
+void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[], char tipo[])
 {
   int cod = contas->codigo;
   const int emailExiste = verificarEmail(contas, email);
@@ -82,7 +104,14 @@ void registo(Conta *contas, char email[], char pass[], char nome[], char morada[
       if (novo != NULL)
       {
         novo->codigo = cod;
-        strcpy(novo->tipo, "cliente");
+        if (tipo != NULL)
+        {
+          strcpy(novo->tipo, tipo);
+        }
+        else
+        {
+          strcpy(novo->tipo, "cliente");
+        }
         strcpy(novo->email, email);
         strcpy(novo->password, pass);
         strcpy(novo->nome, nome);
@@ -92,13 +121,13 @@ void registo(Conta *contas, char email[], char pass[], char nome[], char morada[
         novo->meio_id = 0;
         novo->seguinte = NULL;
 
-        //percorrer a lista ligada até ao fim
+        // percorrer a lista ligada até ao fim
         while (aux->seguinte != NULL)
         {
           aux = aux->seguinte;
         }
 
-        //adicionar o novo utilizador no fim da lista ligada
+        // adicionar o novo utilizador no fim da lista ligada
         aux->seguinte = novo;
 
         printf("Conta criada com sucesso!\n");

@@ -90,7 +90,7 @@ void menuGestorMeios(Meio *meios)
 		switch (op)
 		{
 		case 1:
-			// handleRegisto(contas);
+			// handleRegisto(contas, 0);
 			break;
 		case 2:
 			listarMeios(meios);
@@ -139,7 +139,8 @@ void menuGestorContas(Conta *contas)
 		switch (op)
 		{
 		case 1:
-			handleRegisto(contas);
+			//O parametro 1 indica que é um registo de um gestor
+			handleRegisto(contas, 1);
 			break;
 		case 2:
 			listarContas(contas, "cliente");
@@ -211,7 +212,8 @@ void menuPrincipal(Conta *contas, Meio *meios)
 			handleLogin(contas, meios);
 			break;
 		case 2:
-			handleRegisto(contas);
+			//O parametro 0 indica que é um registo de cliente
+			handleRegisto(contas, 0);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
