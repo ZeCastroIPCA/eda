@@ -4,7 +4,7 @@
 #include "../../meios/meio.h"
 
 void handleLogin(Conta *contas, Meio *meios);
-Conta *handleRegisto(Conta *contas);
+void handleRegisto(Conta *contas);
 
-Conta *login(Conta *inicio, char email[], char pass[]);
-Conta *registo(Conta *inicio, char email[], char pass[], char nome[], char morada[], char nif[]);
+Conta *login(Conta *contas, char email[], char pass[]);
+void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[]);

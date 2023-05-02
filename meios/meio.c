@@ -2,7 +2,7 @@
 #include <string.h>
 #include "meio.h"
 
-int guardarMeios(Meio *inicio)
+int guardarMeios(Meio *meios)
 {
   int cod;
   float bat, aut;
@@ -12,13 +12,13 @@ int guardarMeios(Meio *inicio)
   fpr = fopen("./storage/meios.txt", "r");
   if (fpw != NULL && fpr != NULL)
   {
-    Meio *aux = inicio;
+    Meio *aux = meios;
     while (aux != NULL)
     {
-      
-        fprintf(fpw, "%d;%.2f;%.2f;%s\n", aux->codigo, aux->bateria,
-                aux->autonomia, aux->tipo);
-        aux = aux->seguinte;
+
+      fprintf(fpw, "%d;%.2f;%.2f;%s\n", aux->codigo, aux->bateria,
+              aux->autonomia, aux->tipo);
+      aux = aux->seguinte;
     }
     fclose(fpw);
     fclose(fpr);
@@ -47,7 +47,7 @@ Meio *lerMeios()
         fscanf(fp, "%d;%f;%f;%s\n", &cod, &bat, &aut, tipo);
         aux = inserirMeio(aux, cod, tipo, bat, aut);
         novo = aux;
-        //printf("Meios: %d %s %.2f %.2f\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia);
+        // printf("Meios: %d %s %.2f %.2f\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia);
       }
       fclose(fp);
     }
@@ -56,9 +56,9 @@ Meio *lerMeios()
 }
 
 // Inserção de um novo registo
-Meio *inserirMeio(Meio *inicio, int cod, char tipo[], float bat, float aut)
+Meio *inserirMeio(Meio *meios, int cod, char tipo[], float bat, float aut)
 {
-  if (!existeMeio(inicio, cod))
+  if (!existeMeio(meios, cod))
   {
     Meio *novo = malloc(sizeof(struct registo));
     if (novo != NULL)
@@ -67,82 +67,88 @@ Meio *inserirMeio(Meio *inicio, int cod, char tipo[], float bat, float aut)
       strcpy(novo->tipo, tipo);
       novo->bateria = bat;
       novo->autonomia = aut;
-      novo->seguinte = inicio;
+      novo->seguinte = meios;
       return (novo);
-    } else {
-      return (inicio);
+    }
+    else
+    {
+      return (meios);
     }
   }
   else
-    return (inicio);
+    return (meios);
 }
 
-// listar na consola o conteúdo da lista ligada
-void listarMeios(Meio *inicio)
+// Listagem de todos os meios numa tabela formatada
+void listarMeios(Meio *meios)
 {
-  while (inicio != NULL)
+  printf("\n--  LISTA DE MEIOS   --------------------------------\n");
+  printf("-----------------------------------------------------\n");
+  printf("| ID | Tipo         | Bateria | Autonomia | Alugado |\n");
+  printf("-----------------------------------------------------\n");
+  while (meios != NULL)
   {
-    printf("%d %s %.2f %.2f\n", inicio->codigo, inicio->tipo,
-           inicio->bateria, inicio->autonomia);
-    inicio = inicio->seguinte;
+
+    printf("| %-2d | %-12s |  %05.2f%% |  %05.2fKm  | ------- |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia);
+    meios = meios->seguinte;
   }
+  printf("-----------------------------------------------------\n");
 }
 
-// Determinar existência do 'codigo' na lista ligada 'inicio'
+// Determinar existência do 'codigo' na lista ligada 'meios'
 // devolve 1 se existir ou 0 caso contrário
-int existeMeio(Meio *inicio, int cod)
+int existeMeio(Meio *meios, int cod)
 {
-  while (inicio != NULL)
+  while (meios != NULL)
   {
-    if (inicio->codigo == cod)
+    if (meios->codigo == cod)
       return (1);
-    inicio = inicio->seguinte;
+    meios = meios->seguinte;
   }
   return (0);
 }
 
 /*
-Meio* removerMeio(Meio* inicio, int cod) // Remover um meio a partir do seu código
-{while (inicio!=NULL)
- {if (inicio->codigo==cod)
-   {aux = inicio->seguinte;
-          free(inicio);
+Meio* removerMeio(Meio* meios, int cod) // Remover um meio a partir do seu código
+{while (meios!=NULL)
+ {if (meios->codigo==cod)
+   {aux = meios->seguinte;
+          free(meios);
     return(aux);
    }
-  else {inicio = removerMeio(inicio->seguinte,cod);
-  return(inicio);
+  else {meios = removerMeio(meios->seguinte,cod);
+  return(meios);
        }
  }
 }
 */
 
-// Remover um meio a partir do seu código{
-Meio *removerMeio(Meio *inicio, int cod)
+// Remover um meio a partir do seu código
+void removerMeio(Meio *meios, int cod)
 {
-  Meio *anterior = inicio, *atual = inicio, *aux;
-
+  // TODO - bug fix: ao remover o meio no mesmo ciclo em que cria o meio, vai guardar lixo
+  Meio *anterior = meios, *atual = meios, *aux;
   if (atual == NULL)
-    return (NULL);
-  else if (atual->codigo == cod) // remoção do 1º registo
+  {
+    printf("Não existem meios registados!\n");
+    return;
+  }
+  if (atual->codigo == cod) // remoção do 1º registo
   {
     aux = atual->seguinte;
     free(atual);
-    return (aux);
+    return;
   }
-  else
+  while ((atual != NULL) && (atual->codigo != cod))
   {
-    while ((atual != NULL) && (atual->codigo != cod))
-    {
-      anterior = atual;
-      atual = atual->seguinte;
-    }
-    if (atual == NULL)
-      return (inicio);
-    else
-    {
-      anterior->seguinte = atual->seguinte;
-      free(atual);
-      return (inicio);
-    }
+    anterior = atual;
+    atual = atual->seguinte;
   }
+  if (atual == NULL)
+  {
+    printf("Meio não encontrado!\n");
+    return;
+  }
+  anterior->seguinte = atual->seguinte;
+  free(atual);
 }

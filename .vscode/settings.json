@@ -12,6 +12,8 @@
         "meio.h": "c",
         "aluguer.h": "c",
         "__locale": "c",
-        "locale": "c"
+        "locale": "c",
+        "cstring": "c",
+        "filemanager.h": "c"
     }
 }

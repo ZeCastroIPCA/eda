@@ -3,9 +3,8 @@
 #include "../contas/conta/conta.h"
 #include "../meios/meio.h"
 
-void menuGestorClientes(Conta *contas);
-void menuGestorGestores();
+void menuGestorContas(Conta *contas);
 void menuGestorMeios();
 void menuGestorPrincipal(Conta *conta, Meio *meios);
-Conta *menuPrincipal(Conta *conta, Meio *meios);
+void menuPrincipal(Conta *conta, Meio *meios);
 void menuCliente(Conta *contas, Conta *conta, Meio *meios);

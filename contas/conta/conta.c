@@ -56,15 +56,15 @@ void alterarConta(Conta *contas, int cod)
   scanf("%s", aux->morada);
   printf("NIF: ");
   scanf("%s", aux->nif);
+  printf("Saldo: ");
+  scanf("%f", &aux->saldo);
 
-  contas = aux;
   printf("\nInformações do cliente %d alteradas com sucesso!\n", cod);
 }
 
-// Remover uma conta a partir do seu código
+// Remove uma conta a partir do seu código
 void removerConta(Conta *contas, int cod)
 {
-  // TODO - bug fix: ao remover a conta no mesmo ciclo em que cria a conta, vai guardar lixo
   Conta *anterior = contas, *atual = contas, *aux;
   if (atual == NULL)
   {
@@ -91,7 +91,7 @@ void removerConta(Conta *contas, int cod)
   free(atual);
 }
 
-// guardar contas no ficheiro
+// guarda as contas em ficheiros de texto e binário
 void guardarContas(Conta *contas)
 {
   FILE *fp;
@@ -114,19 +114,41 @@ void guardarContas(Conta *contas)
     printf("O ficheiro contas.txt não existe!\n");
 }
 
-void listarContas(Conta *contas)
+// lista todas as contas de um determinado tipo (cliente ou gestor) conseguido por parâmetro
+void listarContas(Conta *contas, char tipo[])
 {
-  printf("\n-- LISTA DE CLIENTES ------------------\n");
-  printf("---------------------------------------\n");
-  printf("| ID | Nome         | Saldo | ID Meio |\n");
-  printf("---------------------------------------\n");
-  while (contas != NULL)
+  if (tipo != NULL)
   {
-    if (!strcmp(contas->tipo, "cliente"))
+    if (!strcmp(tipo, "cliente"))
     {
-      printf("| %-2d | %-12s | %05.2f | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
+      printf("\n-- LISTA DE CLIENTES ------------------\n");
+      printf("---------------------------------------\n");
+      printf("| ID | Nome         | Saldo | ID Meio |\n");
+      printf("---------------------------------------\n");
+      while (contas != NULL)
+      {
+        if (!strcmp(contas->tipo, "cliente"))
+        {
+          printf("| %-2d | %-12s | %05.2f | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
+        }
+        contas = contas->seguinte;
+      }
     }
-    contas = contas->seguinte;
+    else
+    {
+      printf("\n-- LISTA DE GESTORES ------------------\n");
+      printf("---------------------------------------\n");
+      printf("| ID | Email                          |\n");
+      printf("---------------------------------------\n");
+      while (contas != NULL)
+      {
+        if (!strcmp(contas->tipo, "gestor"))
+        {
+          printf("| %-2d | %-30s |\n", contas->codigo, contas->email);
+        }
+        contas = contas->seguinte;
+      }
+    }
   }
   printf("---------------------------------------\n");
 }
@@ -145,7 +167,7 @@ int existeConta(Conta *contas, int cod)
 }
 
 // Determinar existência do 'email' inserido na lista ligada 'contas'
-int verifyEmail(Conta *contas, char email[])
+int verificarEmail(Conta *contas, char email[])
 {
   while (contas != NULL)
   {

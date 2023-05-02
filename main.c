@@ -14,7 +14,8 @@ int main()
 	Meio *meios = NULL;		   // Lista ligada vazia
 	contas = lerContas();
 	meios = lerMeios();
-	contas = menuPrincipal(contas, meios);
+	menuPrincipal(contas, meios);
 	guardarContas(contas);
+	guardarMeios(meios);
 	return (0);
 }

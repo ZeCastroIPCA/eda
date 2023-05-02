@@ -37,7 +37,7 @@ void handleLogin(Conta *contas, Meio *meios)
 }
 
 // Criar uma nova conta cliente
-Conta *handleRegisto(Conta *contas)
+void handleRegisto(Conta *contas)
 {
   char email[50], password[50], nome[50], morada[50], nif[9];
   printf("Email: ");
@@ -52,7 +52,8 @@ Conta *handleRegisto(Conta *contas)
   scanf("%[^\n]s", morada);
   printf("NIF: ");
   scanf("%s", nif);
-  return registo(contas, email, password, nome, morada, nif);
+  
+  registo(contas, email, password, nome, morada, nif);
 }
 
 // Verificar se o email e a password estão corretos
@@ -68,14 +69,15 @@ Conta *login(Conta *contas, char email[], char pass[])
 }
 
 // Criar uma nova conta
-Conta *registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[])
+void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[])
 {
   int cod = contas->codigo;
-  const int emailExiste = verifyEmail(contas, email);
+  const int emailExiste = verificarEmail(contas, email);
   while (1)
   {
     if (!existeConta(contas, cod) && !emailExiste)
     {
+      Conta *aux = contas;
       Conta *novo = malloc(sizeof(struct contas));
       if (novo != NULL)
       {
@@ -88,21 +90,30 @@ Conta *registo(Conta *contas, char email[], char pass[], char nome[], char morad
         strcpy(novo->nif, nif);
         novo->saldo = 0;
         novo->meio_id = 0;
-        novo->seguinte = contas;
+        novo->seguinte = NULL;
+
+        //percorrer a lista ligada até ao fim
+        while (aux->seguinte != NULL)
+        {
+          aux = aux->seguinte;
+        }
+
+        //adicionar o novo utilizador no fim da lista ligada
+        aux->seguinte = novo;
+
         printf("Conta criada com sucesso!\n");
-        return (novo);
+        break;
       }
       else
       {
         printf("Não foi possível alocar memória\npara criação de um novo utilizador!\n");
-        return (contas);
       }
       break;
     }
     else if (emailExiste)
     {
       printf("\nJá existe uma conta com o email introduzido!\n");
-      return (contas);
+      break;
     }
     else
       cod++;

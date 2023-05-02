@@ -25,7 +25,8 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 		switch (op)
 		{
 		case 1:
-			if(conta->meio_id != 0){
+			if (conta->meio_id != 0)
+			{
 				printf("Pretente terminar o aluguer atual?\n(1 - Sim | 0 - Não):");
 				scanf("%d", &aluguer_op);
 				if (aluguer_op)
@@ -70,49 +71,68 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 	};
 }
 
-void menuGestorGestores(Conta *contas)
-{
-	int op;
-	printf("\n------------------------------\n");
-	printf("|     Gestão de Gestores     |\n");
-	printf("------------------------------\n");
-	printf("1 - Criar nova conta de gestor\n");
-	printf("2 - Listar todos os gestores\n");
-	printf("3 - Alterar dados de um gestor\n");
-	printf("4 - Eliminar um gestor\n");
-	printf("0 - Voltar\n");
-	printf("Opcao:");
-	scanf("%d", &op);
-}
-
 void menuGestorMeios(Meio *meios)
-{
-	int op;
-	printf("\n------------------------------\n");
-	printf("|       Gestão de Meios      |\n");
-	printf("------------------------------\n");
-	printf("1 - Registar um meio elétrico\n");
-	printf("2 - Listar todos os meios elétricos\n");
-	printf("3 - Alterar dados de um meio elétrico\n");
-	printf("4 - Eliminar um meio elétrico\n");
-	printf("0 - Voltar\n");
-	printf("Opcao:");
-	scanf("%d", &op);
-}
-
-void menuGestorClientes(Conta *contas)
 {
 	int op;
 	int id;
 	do
 	{
 		printf("\n------------------------------\n");
-		printf("|     Gestão de Clientes     |\n");
+		printf("|       Gestão de Meios      |\n");
 		printf("------------------------------\n");
-		printf("1 - Registar um novo cliente\n");
+		printf("1 - Registar um meio elétrico\n");
+		printf("2 - Listar todos os meios elétricos\n");
+		printf("3 - Alterar dados de um meio elétrico\n");
+		printf("4 - Eliminar um meio elétrico\n");
+		printf("0 - Voltar\n");
+		printf("Opcao:");
+		scanf("%d", &op);
+		switch (op)
+		{
+		case 1:
+			// handleRegisto(contas);
+			break;
+		case 2:
+			listarMeios(meios);
+			break;
+		case 3:
+			printf("\nID a alterar:");
+			scanf("%d", &id);
+			// alterarMeio(meios, id);
+			break;
+		case 4:
+			printf("\nID a eliminar:");
+			scanf("%d", &id);
+			if (id)
+			{
+				removerMeio(meios, id);
+				printf("\nO meio %d foi apagada com sucesso!\n", id);
+				op = 0;
+				break;
+			}
+			printf("\nA sua conta não foi apagada!\n\n");
+			break;
+		default:
+			op != 0 && printf("\nOpção inválida!\n");
+			break;
+		}
+	} while (op != 0);
+}
+
+void menuGestorContas(Conta *contas)
+{
+	int op;
+	int id;
+	do
+	{
+		printf("\n------------------------------\n");
+		printf("|     Gestão de Contas       |\n");
+		printf("------------------------------\n");
+		printf("1 - Registar uma nova conta\n");
 		printf("2 - Listar todos os clientes\n");
-		printf("3 - Alterar dados de um cliente\n");
-		printf("4 - Eliminar um cliente\n");
+		printf("3 - Listar todos os gestores\n");
+		printf("4 - Alterar dados de uma conta\n");
+		printf("5 - Eliminar uma conta\n");
 		printf("0 - Voltar\n");
 		printf("Opcao:");
 		scanf("%d", &op);
@@ -122,14 +142,17 @@ void menuGestorClientes(Conta *contas)
 			handleRegisto(contas);
 			break;
 		case 2:
-			listarContas(contas);
+			listarContas(contas, "cliente");
 			break;
 		case 3:
+			listarContas(contas, "gestor");
+			break;
+		case 4:
 			printf("\nID a alterar:");
 			scanf("%d", &id);
 			alterarConta(contas, id);
 			break;
-		case 4:
+		case 5:
 			printf("\nID a eliminar:");
 			scanf("%d", &id);
 			removerConta(contas, id);
@@ -150,8 +173,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 		printf("|       Menu de Gestão       |\n");
 		printf("------------------------------\n");
 		printf("1 - Gestão de Meios Elétricos\n");
-		printf("2 - Gestão de Clientes\n");
-		printf("3 - Gestão de Gestores\n");
+		printf("2 - Gestão de Contas\n");
 		printf("0 - Voltar\n");
 		printf("Opcao:");
 		scanf("%d", &op);
@@ -161,10 +183,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 			menuGestorMeios(meios);
 			break;
 		case 2:
-			menuGestorClientes(contas);
-			break;
-		case 3:
-			menuGestorGestores(contas);
+			menuGestorContas(contas);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
@@ -173,7 +192,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 	} while (op != 0);
 }
 
-Conta *menuPrincipal(Conta *contas, Meio *meios)
+void menuPrincipal(Conta *contas, Meio *meios)
 {
 	int op;
 	do
@@ -192,12 +211,11 @@ Conta *menuPrincipal(Conta *contas, Meio *meios)
 			handleLogin(contas, meios);
 			break;
 		case 2:
-			contas = handleRegisto(contas);
+			handleRegisto(contas);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
 			break;
 		}
 	} while (op != 0);
-	return (contas);
 }

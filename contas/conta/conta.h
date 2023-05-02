@@ -19,6 +19,6 @@ void removerConta(Conta *contas, int cod);
 void alterarConta(Conta *contas, int cod);
 Conta *lerContas();
 void guardarContas(Conta *contas);
-void listarContas(Conta *contas);
+void listarContas(Conta *contas, char tipo[]);
 int existeConta(Conta *contas, int cod);
-int verifyEmail(Conta *contas, char email[]);
+int verificarEmail(Conta *contas, char email[]);
