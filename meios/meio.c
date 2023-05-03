@@ -136,22 +136,53 @@ void listarMeios(Meio *meios)
   printf("-----------------------------------------------------\n");
 }
 
-// Listagem de todos os meios numa tabela formatada com informação mais detalhada para o cliente
+// Listagem de todos os meios por ordem decrescente de autonomia
 void listarMeiosParaCliente(Meio *meios)
 {
+  // Contar o número de meios
+  int count = 0;
+  Meio *aux = meios;
+  while (aux != NULL) {
+    count++;
+    aux = aux->seguinte;
+  }
+
+  // Criar um array de meios para poder ordenar
+  Meio **meios_array = malloc(count * sizeof(Meio*));
+  aux = meios;
+  int i = 0;
+  while (aux != NULL) {
+    meios_array[i] = aux;
+    aux = aux->seguinte;
+    i++;
+  }
+
+  // Ordenar o array por ordem decrescente de autonomia
+  for (int i = 0; i < count - 1; i++) {
+    for (int j = i + 1; j < count; j++) {
+      if (meios_array[i]->autonomia < meios_array[j]->autonomia) {
+        Meio *aux = meios_array[i];
+        meios_array[i] = meios_array[j];
+        meios_array[j] = aux;
+      }
+    }
+  }
+
+  // Imprimir a tabela
   printf("\n--  LISTA DE MEIOS   --------------------------------\n");
   printf("-----------------------------------------------------\n");
   printf("| ID | Tipo         | Bateria | Autonomia |  €/seg  |\n");
   printf("-----------------------------------------------------\n");
-  while (meios != NULL)
-  {
-    if (meios->id_cliente == 0)
-    {
-      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm |  %4.2f€  |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->custo);
-    }    
-    meios = meios->seguinte;
+  for (int i = 0; i < count; i++) {
+    Meio *meio = meios_array[i];
+    if (meio->id_cliente == 0) {
+      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm |  %4.2f€  |\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia, meio->custo);
+    }
   }
   printf("-----------------------------------------------------\n");
+
+  // Libertar a memória alocada para o array
+  free(meios_array);
 }
 
 // Alterar um meio a partir do seu código
