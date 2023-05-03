@@ -36,22 +36,33 @@ Meio *lerMeios()
 // Guardar meios no ficheiro
 void guardarMeios(Meio *meios)
 {
-  FILE *fp;
-  fp = fopen("./storage/meios.txt", "w");
+  FILE *fp, *fpb;
+  fp = fopen("./storage/meios.txt", "w+");
+  fpb = fopen("./storage/meios.bin", "wb+");
   if (fp != NULL)
   {
     Meio *aux = meios;
     while (aux != NULL)
     {
-      //TODO: escreve uma linha vazia antes de escrever os meios
       fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld;%s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
+      fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld;%s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
       aux = aux->seguinte;
     }
     fclose(fp);
+    fclose(fpb);
     printf("Guardado no ficheiro com sucesso!\n");
   }
   else
-    printf("O ficheiro meios.txt não existe!\n");
+  {
+    if (fp == NULL)
+    {
+      printf("O ficheiro meios.txt não existe!\n");
+    } else if (fpb == NULL) {
+      printf("O ficheiro meios.bin não existe!\n");
+    } else {
+      printf("Houve um erro na pesquisa dos ficheiros!\n");
+    }
+  }
 }
 
 // Inserção de um novo meio

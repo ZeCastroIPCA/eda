@@ -37,9 +37,10 @@ Conta *lerContas()
 // guarda as contas em ficheiros de texto e binário
 void guardarContas(Conta *contas)
 {
-  FILE *fp;
-  fp = fopen("./storage/contas.txt", "w");
-  if (fp != NULL)
+  FILE *fp, *fpb;
+  fp = fopen("./storage/contas.txt", "w+");
+  fpb = fopen("./storage/contas.bin", "wb+");
+  if (fp != NULL && fpb != NULL)
   {
     Conta *aux = contas;
     if (aux != NULL)
@@ -47,14 +48,25 @@ void guardarContas(Conta *contas)
       while (aux != NULL)
       {
         fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
+        fprintf(fpb, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
         aux = aux->seguinte;
       }
     }
     fclose(fp);
+    fclose(fpb);
     printf("Guardado no ficheiro com sucesso!\n");
   }
   else
-    printf("O ficheiro contas.txt não existe!\n");
+  {
+    if (fp == NULL)
+    {
+      printf("O ficheiro contas.txt não existe!\n");
+    } else if (fpb == NULL) {
+      printf("O ficheiro contas.bin não existe!\n");
+    } else {
+      printf("Houve um erro na pesquisa dos ficheiros!\n");
+    }
+  }
 }
 
 // lista todas as contas de um determinado tipo (cliente ou gestor) conseguido por parâmetro

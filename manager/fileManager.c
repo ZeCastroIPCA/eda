@@ -45,26 +45,6 @@ Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char 
   return (contas);
 }
 
-// inserir conta no ficheiro binário
-int saveContasBin(Conta *contas)
-{
-  FILE *fp;
-  fp = fopen("./storagebin/contas.bin", "wb");
-  if (fp != NULL)
-  {
-    Conta *aux = contas;
-    while (aux != NULL)
-    {
-      fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
-      aux = aux->seguinte;
-    }
-    fclose(fp);
-    return (1);
-  }
-  else
-    return (0);
-}
-
 // inserir meios no ficheiro
 Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float autonomia, int id_cliente, float custo, time_t inicio_aluguer, char geoCode[])
 {

@@ -58,7 +58,7 @@ void handleRegisto(Conta *contas, int who)
   printf("Password: ");
   scanf("%s", password);
   getchar();
-  if (tipoInt == 1)
+  if (tipoInt == 456)
   {
     printf("Nome: ");
     scanf("%49[^\n]s", nome);
