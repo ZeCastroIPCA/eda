@@ -17,7 +17,8 @@ typedef struct meios
 
 void inserirMeio(Meio *meios); // Inserção de um novo meio
 void listarMeios(Meio *meios); // listar na consola o conteúdo da lista ligada meios
-void listarMeiosParaCliente(Meio *meios); // listar todos os meios disponíveis para aluguer
+void listarMeiosParaCliente(Meio *meios); // listar todos os meios disponíveis para aluguer por ordem descrescente de autonomia
+void listarMeiosPorGeoCode(Meio *meios, char geo[]); // listar os meios numa determinada localização
 void alterarMeio(Meio *meios, int cod); // Alterar um meio a partir do seu código 
 void removerMeio(Meio *meios, int cod); // Remover um meio a partir do seu código
 

@@ -185,6 +185,24 @@ void listarMeiosParaCliente(Meio *meios)
   free(meios_array);
 }
 
+// Listagem de meios por geocode
+void listarMeiosPorGeoCode(Meio *meios, char geoCode[])
+{
+  printf("\n--  LISTA DE MEIOS   --------------------------------\n");
+  printf("-----------------------------------------------------\n");
+  printf("| ID | Tipo         | Bateria | Autonomia | Geocode |\n");
+  printf("-----------------------------------------------------\n");
+  while (meios != NULL)
+  {
+    if (strcmp(meios->geoCode, geoCode) == 0)
+    {
+      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-7s |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->geoCode);
+    }
+    meios = meios->seguinte;
+  }
+  printf("-----------------------------------------------------\n");
+}
+
 // Alterar um meio a partir do seu código
 void alterarMeio(Meio *meios, int cod)
 {

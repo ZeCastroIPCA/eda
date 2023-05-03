@@ -103,8 +103,8 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 
 void menuGestorMeios(Meio *meios)
 {
-	int op;
-	int id;
+	int op, id;
+	char geo[100];
 	do
 	{
 		printf("\n------------------------------\n");
@@ -112,8 +112,9 @@ void menuGestorMeios(Meio *meios)
 		printf("------------------------------\n");
 		printf("1 - Registar um meio elétrico\n");
 		printf("2 - Listar todos os meios elétricos\n");
-		printf("3 - Alterar dados de um meio elétrico\n");
-		printf("4 - Eliminar um meio elétrico\n");
+		printf("3 - Listar meios num Geo Código\n");
+		printf("4 - Alterar dados de um meio elétrico\n");
+		printf("5 - Eliminar um meio elétrico\n");
 		printf("0 - Voltar\n");
 		printf("Opcao:");
 		scanf("%d", &op);
@@ -126,11 +127,16 @@ void menuGestorMeios(Meio *meios)
 			listarMeios(meios);
 			break;
 		case 3:
+			printf("\nGeo código:");
+			scanf("%99s", geo);
+			listarMeiosPorGeoCode(meios, geo);
+			break;
+		case 4:
 			printf("\nID a alterar:");
 			scanf("%d", &id);
 			alterarMeio(meios, id);
 			break;
-		case 4:
+		case 5:
 			printf("\nID a eliminar:");
 			scanf("%d", &id);
 			if (id)
