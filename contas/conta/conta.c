@@ -3,6 +3,7 @@
 #include <string.h>
 #include "conta.h"
 #include "../../manager/fileManager.h"
+#include "../../meios/meio.h"
 
 // ler contas
 Conta *lerContas()
@@ -19,76 +20,18 @@ Conta *lerContas()
     Conta *novo = malloc(sizeof(fp));
     if (novo != NULL)
     {
-      // printf("Contas disponíveis:\n");
+      printf("\nContas disponíveis:\n");
       while (!feof(fp))
       {
         fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d \n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &meio_id);
         aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, meio_id);
         novo = aux;
-        // printf("%d %s %s %s %s %s %s %.2f %d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->renting);
+        printf("%d %s %s %s %s %s %s %.2f %d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
       }
       fclose(fp);
     }
   }
   return (aux);
-}
-
-// Alterar uma conta a partir do seu código
-void alterarConta(Conta *contas, int cod)
-{
-  Conta *aux = contas;
-  while ((aux != NULL) && (aux->codigo != cod))
-  {
-    aux = aux->seguinte;
-  }
-  if (aux == NULL)
-  {
-    printf("Conta com ID %d não encontrada!\n", cod);
-    return;
-  }
-  printf("\nEmail: ");
-  scanf("%s", aux->email);
-  printf("Password: ");
-  scanf("%s", aux->password);
-  printf("Nome: ");
-  scanf("%s", aux->nome);
-  printf("Morada: ");
-  scanf("%s", aux->morada);
-  printf("NIF: ");
-  scanf("%s", aux->nif);
-  printf("Saldo: ");
-  scanf("%f", &aux->saldo);
-
-  printf("\nInformações do cliente %d alteradas com sucesso!\n", cod);
-}
-
-// Remove uma conta a partir do seu código
-void removerConta(Conta *contas, int cod)
-{
-  Conta *anterior = contas, *atual = contas, *aux;
-  if (atual == NULL)
-  {
-    printf("Não existem contas registadas!\n");
-    return;
-  }
-  if (atual->codigo == cod) // remoção do 1º registo
-  {
-    aux = atual->seguinte;
-    free(atual);
-    return;
-  }
-  while ((atual != NULL) && (atual->codigo != cod))
-  {
-    anterior = atual;
-    atual = atual->seguinte;
-  }
-  if (atual == NULL)
-  {
-    printf("Conta não encontrada!\n");
-    return;
-  }
-  anterior->seguinte = atual->seguinte;
-  free(atual);
 }
 
 // guarda as contas em ficheiros de texto e binário
@@ -153,14 +96,71 @@ void listarContas(Conta *contas, char tipo[])
   printf("---------------------------------------\n");
 }
 
+// Alterar uma conta a partir do seu código
+void alterarConta(Conta *contas, int cod)
+{
+  Conta *aux = contas;
+  aux = existeConta(contas, cod);
+  if (aux == NULL)
+  {
+    printf("Conta com ID %d não encontrada!\n", cod);
+    return;
+  }
+
+  printf("\nEmail: ");
+  scanf("%s", aux->email);
+  printf("Password: ");
+  scanf("%s", aux->password);
+  printf("Nome: ");
+  scanf("%s", aux->nome);
+  printf("Morada: ");
+  scanf("%s", aux->morada);
+  printf("NIF: ");
+  scanf("%s", aux->nif);
+  printf("Saldo: ");
+  scanf("%f", &aux->saldo);
+
+  printf("\nInformações do cliente %d alteradas com sucesso!\n", cod);
+}
+
+// Remove uma conta a partir do seu código
+void removerConta(Conta *contas, int cod)
+{
+  Conta *anterior = contas, *atual = contas, *aux;
+  if (atual == NULL)
+  {
+    printf("Não existem contas registadas!\n");
+    return;
+  }
+  if (atual->codigo == cod) // remoção do 1º registo
+  {
+    aux = atual->seguinte;
+    free(atual);
+    return;
+  }
+  while ((atual != NULL) && (atual->codigo != cod))
+  {
+    anterior = atual;
+    atual = atual->seguinte;
+  }
+  if (atual == NULL)
+  {
+    printf("Conta não encontrada!\n");
+    return;
+  }
+  anterior->seguinte = atual->seguinte;
+  free(atual);
+}
+
 // Determinar existência do 'codigo' na lista ligada 'contas'
 // devolve o código do último registo + 1 (ou seja, o próximo a ser registado) se existir ou 0 caso contrário
-int existeConta(Conta *contas, int cod)
+Conta *existeConta(Conta *contas, int cod)
 {
   while (contas != NULL)
   {
-    if (contas->codigo == cod)
-      return (contas->codigo + 1);
+    if (contas->codigo == cod){
+      return contas;
+    }
     contas = contas->seguinte;
   }
   return (0);

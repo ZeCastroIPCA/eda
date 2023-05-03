@@ -1,40 +1,17 @@
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "meio.h"
+#include "../manager/fileManager.h"
 
-int guardarMeios(Meio *meios)
-{
-  int cod;
-  float bat, aut;
-  char tipo[50];
-  FILE *fpw, *fpr;
-  fpw = fopen("./storage/meios.txt", "w");
-  fpr = fopen("./storage/meios.txt", "r");
-  if (fpw != NULL && fpr != NULL)
-  {
-    Meio *aux = meios;
-    while (aux != NULL)
-    {
-
-      fprintf(fpw, "%d;%.2f;%.2f;%s\n", aux->codigo, aux->bateria,
-              aux->autonomia, aux->tipo);
-      aux = aux->seguinte;
-    }
-    fclose(fpw);
-    fclose(fpr);
-    return (1);
-  }
-  else
-    return (0);
-}
-
+// Ler meios do ficheiro
 Meio *lerMeios()
 {
   FILE *fp;
-  int cod;
-  float bat, aut;
-  char tipo[50];
-  int c;
+  int cod, id_cliente;
+  float bat, aut, custo;
+  char tipo[50], geoCode[100];
+  time_t inicio_aluguer;
   Meio *aux = NULL;
   fp = fopen("./storage/meios.txt", "r");
   if (fp != NULL)
@@ -42,12 +19,13 @@ Meio *lerMeios()
     Meio *novo = malloc(sizeof(fp));
     if (novo != NULL)
     {
+      printf("\nMeios disponíveis:\n");
       while (!feof(fp))
       {
-        fscanf(fp, "%d;%f;%f;%s\n", &cod, &bat, &aut, tipo);
-        aux = inserirMeio(aux, cod, tipo, bat, aut);
+        fscanf(fp, "%d;%[^;];%f;%f;%d;%f;%ld;%s\n", &cod, tipo, &bat, &aut, &id_cliente, &custo, &inicio_aluguer, geoCode);
+        aux = inserirMeioFile(aux, cod, tipo, bat, aut, id_cliente, custo, inicio_aluguer, geoCode);
         novo = aux;
-        // printf("Meios: %d %s %.2f %.2f\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia);
+        printf("%d %s %.2f %.2f %d %.2f %ld %s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
       }
       fclose(fp);
     }
@@ -55,28 +33,82 @@ Meio *lerMeios()
   return (aux);
 }
 
-// Inserção de um novo registo
-Meio *inserirMeio(Meio *meios, int cod, char tipo[], float bat, float aut)
+// Guardar meios no ficheiro
+void guardarMeios(Meio *meios)
 {
-  if (!existeMeio(meios, cod))
+  FILE *fp;
+  fp = fopen("./storage/meios.txt", "w");
+  if (fp != NULL)
   {
-    Meio *novo = malloc(sizeof(struct registo));
-    if (novo != NULL)
+    Meio *aux = meios;
+    while (aux != NULL)
     {
-      novo->codigo = cod;
-      strcpy(novo->tipo, tipo);
-      novo->bateria = bat;
-      novo->autonomia = aut;
-      novo->seguinte = meios;
-      return (novo);
+      //TODO: escreve uma linha vazia antes de escrever os meios
+      fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld;%s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
+      aux = aux->seguinte;
     }
-    else
-    {
-      return (meios);
-    }
+    fclose(fp);
+    printf("Guardado no ficheiro com sucesso!\n");
   }
   else
-    return (meios);
+    printf("O ficheiro meios.txt não existe!\n");
+}
+
+// Inserção de um novo meio
+void inserirMeio(Meio *meios)
+{
+  int cod = meios->codigo;
+  char tipo[50], geoCode[100];
+  float bateria, autonomia, custo;
+
+  printf("\nTipo: ");
+  scanf("%s", tipo);
+  printf("Bateria: ");
+  scanf("%f", &bateria);
+  printf("Autonomia: ");
+  scanf("%f", &autonomia);
+  printf("Custo: ");
+  scanf("%f", &custo);
+  printf("GeoCode: ");
+  scanf("%99[^\n]s", geoCode);
+  getchar();
+
+  while (1)
+  {
+    if (!existeMeio(meios, cod))
+    {
+      Meio *aux = meios;
+      Meio *novo = malloc(sizeof(struct meios));
+      if (novo != NULL)
+      {
+        novo->codigo = cod;
+        strcpy(novo->tipo, tipo);
+        novo->bateria = bateria;
+        novo->autonomia = autonomia;
+        novo->id_cliente = 0;
+        novo->custo = custo;
+        strcpy(novo->geoCode, geoCode);
+
+        // percorrer a lista ligada até ao fim
+        while (aux->seguinte != NULL)
+        {
+          aux = aux->seguinte;
+        }
+
+        // adicionar o novo meio no fim da lista ligada
+        aux->seguinte = novo;
+        printf("\nMeio criado com sucesso!\n");
+        break;
+      }
+      else
+      {
+        printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
+      }
+      break;
+    }
+    else
+      cod++;
+  }
 }
 
 // Listagem de todos os meios numa tabela formatada
@@ -88,45 +120,40 @@ void listarMeios(Meio *meios)
   printf("-----------------------------------------------------\n");
   while (meios != NULL)
   {
-
-    printf("| %-2d | %-12s |  %05.2f%% |  %05.2fKm  | ------- |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia);
+    printf("| %-2d | %-12s | %06.2f%% |  %06.2fKm | %-7d |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->id_cliente);
     meios = meios->seguinte;
   }
   printf("-----------------------------------------------------\n");
 }
 
-// Determinar existência do 'codigo' na lista ligada 'meios'
-// devolve 1 se existir ou 0 caso contrário
-int existeMeio(Meio *meios, int cod)
+// Alterar um meio a partir do seu código
+void alterarMeio(Meio *meios, int cod)
 {
-  while (meios != NULL)
+  Meio *aux = meios;
+  aux = existeMeio(meios, cod);
+  if (aux == NULL)
   {
-    if (meios->codigo == cod)
-      return (1);
-    meios = meios->seguinte;
+    printf("Não existe nenhum meio com o código %d!\n", cod);
+    return;
   }
-  return (0);
-}
 
-/*
-Meio* removerMeio(Meio* meios, int cod) // Remover um meio a partir do seu código
-{while (meios!=NULL)
- {if (meios->codigo==cod)
-   {aux = meios->seguinte;
-          free(meios);
-    return(aux);
-   }
-  else {meios = removerMeio(meios->seguinte,cod);
-  return(meios);
-       }
- }
+  printf("\nTipo: ");
+  scanf("%s", aux->tipo);
+  printf("\nBateria: ");
+  scanf("%f", &aux->bateria);
+  printf("\nAutonomia: ");
+  scanf("%f", &aux->autonomia);
+  printf("\nCusto: ");
+  scanf("%f", &aux->custo);
+  printf("\nGeoCode: ");
+  scanf("%s", aux->geoCode);
+
+  printf("\n\nInformações do meio %d alteradas com sucesso!\n", cod);
 }
-*/
 
 // Remover um meio a partir do seu código
 void removerMeio(Meio *meios, int cod)
 {
-  // TODO - bug fix: ao remover o meio no mesmo ciclo em que cria o meio, vai guardar lixo
   Meio *anterior = meios, *atual = meios, *aux;
   if (atual == NULL)
   {
@@ -151,4 +178,18 @@ void removerMeio(Meio *meios, int cod)
   }
   anterior->seguinte = atual->seguinte;
   free(atual);
+}
+
+// Determinar existência do 'codigo' na lista ligada 'meios'
+// devolve 1 se existir ou 0 caso contrário
+Meio *existeMeio(Meio *meios, int cod)
+{
+  while (meios != NULL)
+  {
+    if (meios->codigo == cod){
+      return meios;
+    }
+    meios = meios->seguinte;
+  }
+  return (0);
 }

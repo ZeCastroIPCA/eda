@@ -1,23 +1,26 @@
 #pragma once
 #include <stdio.h>
+#include <time.h>
 
-typedef struct registo
+typedef struct meios
 {
     int codigo; // código do meio de mobilidade elétrica
     char tipo[50];
     float bateria;
     float autonomia;
-    int idCliente;
+    int id_cliente;
     float custo;
-    int disponivel;
+    time_t inicio_aluguer;
     char geoCode[100];
-    struct registo *seguinte;
+    struct meios *seguinte;
 } Meio;
 
-Meio *inserirMeio(Meio *inicio, int cod, char tipo[], float bat, float aut); // Inserção de um novo registo
-void listarMeios(Meio *inicio);                                              // listar na consola o conteúdo da lista ligada
-int existeMeio(Meio *inicio, int codigo);                                    // Determinar existência do 'codigo' na lista ligada 'inicio'
-void removerMeio(Meio *inicio, int cod);                                    // Remover um meio a partir do seu código
+void inserirMeio(Meio *meios); // Inserção de um novo meio
+void listarMeios(Meio *meios); // listar na consola o conteúdo da lista ligada
+void alterarMeio(Meio *meios, int cod); // Alterar um meio a partir do seu código 
+void removerMeio(Meio *meios, int cod); // Remover um meio a partir do seu código
 
-int guardarMeios(Meio *inicio);
+Meio *existeMeio(Meio *meios, int codigo); // Determinar existência do 'codigo' na lista ligada 'meios'
+
 Meio *lerMeios();
+void guardarMeios(Meio *meios);

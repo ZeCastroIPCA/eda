@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "../contas/conta/conta.h"
+#include "../meios/meio.h"
 #include "fileManager.h"
 
 // inserir conta no ficheiro
-Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)
+Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)
 {
-  if (!existeConta(inicio, cod))
+  if (!existeConta(contas, cod))
   {
     Conta *novo = malloc(sizeof(struct contas));
     if (novo != NULL)
@@ -33,24 +35,24 @@ Conta *inserirContaFile(Conta *inicio, int cod, char tipo[], char email[], char 
         novo->meio_id = 0;
       }
 
-      novo->seguinte = inicio;
+      novo->seguinte = contas;
       return (novo);
     }
     
-    return (inicio);
+    return (contas);
   }
-  
 
-  return (inicio);
+  return (contas);
 }
 
-int saveContasBin(Conta *inicio)
+// inserir conta no ficheiro binário
+int saveContasBin(Conta *contas)
 {
   FILE *fp;
   fp = fopen("./storagebin/contas.bin", "wb");
   if (fp != NULL)
   {
-    Conta *aux = inicio;
+    Conta *aux = contas;
     while (aux != NULL)
     {
       fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
@@ -61,4 +63,31 @@ int saveContasBin(Conta *inicio)
   }
   else
     return (0);
+}
+
+// inserir meios no ficheiro
+Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float autonomia, int id_cliente, float custo, time_t inicio_aluguer, char geoCode[])
+{
+  if (!existeMeio(meios, cod))
+  {
+    Meio *novo = malloc(sizeof(struct meios));
+    if (novo != NULL)
+    {
+      novo->codigo = cod;
+      strcpy(novo->tipo, tipo);
+      novo->bateria = bateria;
+      novo->autonomia = autonomia;
+      novo->id_cliente = id_cliente;
+      novo->custo = custo;
+      novo->inicio_aluguer = inicio_aluguer;
+      strcpy(novo->geoCode, geoCode);
+
+      novo->seguinte = meios;
+      return (novo);
+    }
+    
+    return (meios);
+  }
+
+  return (meios);
 }

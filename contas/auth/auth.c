@@ -61,10 +61,10 @@ void handleRegisto(Conta *contas, int who)
   if (tipoInt == 1)
   {
     printf("Nome: ");
-    scanf("%[^\n]s", nome);
+    scanf("%49[^\n]s", nome);
     getchar();
     printf("Morada: ");
-    scanf("%[^\n]s", morada);
+    scanf("%49[^\n]s", morada);
     printf("NIF: ");
     scanf("%s", nif);
   }
@@ -118,7 +118,6 @@ void registo(Conta *contas, char email[], char pass[], char nome[], char morada[
         strcpy(novo->morada, morada);
         strcpy(novo->nif, nif);
         novo->saldo = 0;
-        novo->meio_id = 0;
         novo->seguinte = NULL;
 
         // percorrer a lista ligada até ao fim

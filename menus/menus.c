@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 #include "../contas/conta/conta.h"
 #include "../contas/auth/auth.h"
 #include "../meios/meio.h"
@@ -11,6 +12,22 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
 	int op, conta_op, aluguer_op, meio_cod;
 	float saldoCarregar;
+
+	// meio alugado pelo cliente
+	Meio *meio = NULL;
+
+	// encontrar o meio alugado pelo cliente
+	Meio *meio_aux = meios;
+	while (meio_aux != NULL)
+	{
+		if (meio_aux->id_cliente == conta->codigo)
+		{
+			meio = meio_aux;
+			break;
+		}
+		meio_aux = meio_aux->seguinte;
+	}
+
 	while (op != 0)
 	{
 		printf("-------------------------\n");
@@ -32,14 +49,26 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				if (aluguer_op)
 				{
 					conta->meio_id = 0;
+					meio->id_cliente = 0;
+					int tempo_alugado = time(NULL) - meio->inicio_aluguer;
+					conta->saldo -= tempo_alugado * meio->custo;
+					meio->inicio_aluguer = 0;
 				}
 				break;
 			}
 			printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
 			scanf("%d", &meio_cod);
-			if (existeMeio(meios, meio_cod))
+			if (conta->saldo < 0.5)
+			{
+				printf("\nNão tem saldo suficiente para alugar um meio!\n");
+				break;
+			}
+			else if (existeMeio(meios, meio_cod))
 			{
 				conta->meio_id = meio_cod;
+				meio = existeMeio(meios, meio_cod);
+				meio->id_cliente = conta->codigo;
+				meio->inicio_aluguer = time(NULL);
 				conta->saldo -= 0.5;
 				printf("\nMeio alugado com sucesso!\n");
 				break;
@@ -90,7 +119,7 @@ void menuGestorMeios(Meio *meios)
 		switch (op)
 		{
 		case 1:
-			// handleRegisto(contas, 0);
+			inserirMeio(meios);
 			break;
 		case 2:
 			listarMeios(meios);
@@ -98,7 +127,7 @@ void menuGestorMeios(Meio *meios)
 		case 3:
 			printf("\nID a alterar:");
 			scanf("%d", &id);
-			// alterarMeio(meios, id);
+			alterarMeio(meios, id);
 			break;
 		case 4:
 			printf("\nID a eliminar:");
@@ -106,11 +135,10 @@ void menuGestorMeios(Meio *meios)
 			if (id)
 			{
 				removerMeio(meios, id);
-				printf("\nO meio %d foi apagada com sucesso!\n", id);
-				op = 0;
+				printf("\nO meio %d foi apagado com sucesso!\n", id);
 				break;
 			}
-			printf("\nA sua conta não foi apagada!\n\n");
+			printf("\nO meio %d não foi apagado!\n\n", id);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
@@ -139,7 +167,7 @@ void menuGestorContas(Conta *contas)
 		switch (op)
 		{
 		case 1:
-			//O parametro 1 indica que é um registo de um gestor
+			// O parametro 1 indica que é um registo de um gestor
 			handleRegisto(contas, 1);
 			break;
 		case 2:
@@ -212,7 +240,7 @@ void menuPrincipal(Conta *contas, Meio *meios)
 			handleLogin(contas, meios);
 			break;
 		case 2:
-			//O parametro 0 indica que é um registo de cliente
+			// O parametro 0 indica que é um registo de cliente
 			handleRegisto(contas, 0);
 			break;
 		default:

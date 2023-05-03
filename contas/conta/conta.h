@@ -11,14 +11,16 @@ typedef struct contas
     char morada[50]; // morada do cliente
     char nif[9]; // nif do cliente
     float saldo; // saldo da conta do cliente
-    int meio_id; // id do meio associado ao cliente
+    int meio_id; // id do meio de mobilidade elétrica alugado pelo cliente
     struct contas *seguinte;
 } Conta;
 
-void removerConta(Conta *contas, int cod);
+void listarContas(Conta *contas, char tipo[]);
 void alterarConta(Conta *contas, int cod);
+void removerConta(Conta *contas, int cod);
+
+Conta *existeConta(Conta *contas, int cod);
+int verificarEmail(Conta *contas, char email[]);
+
 Conta *lerContas();
 void guardarContas(Conta *contas);
-void listarContas(Conta *contas, char tipo[]);
-int existeConta(Conta *contas, int cod);
-int verificarEmail(Conta *contas, char email[]);
