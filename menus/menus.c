@@ -31,7 +31,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 	while (op != 0)
 	{
 		printf("-------------------------\n");
-		printf("|     Bem vindo %-7s |\n|     Saldo: %05.2f      |\n", conta->nome, conta->saldo);
+		printf("|     Bem vindo %-7s |\n|     Saldo: %6.2f     |\n", conta->nome, conta->saldo);
 		printf("-------------------------\n");
 		conta->meio_id ? printf("1 - Terminar aluguer atual\n") : printf("1 - Alugar um meio elétrico\n");
 		printf("2 - Carregar saldo\n");
@@ -56,6 +56,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 				}
 				break;
 			}
+			listarMeiosParaCliente(meios);
 			printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
 			scanf("%d", &meio_cod);
 			if (conta->saldo < 0.5)

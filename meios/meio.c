@@ -62,7 +62,7 @@ void inserirMeio(Meio *meios)
   float bateria, autonomia, custo;
 
   printf("\nTipo: ");
-  scanf("%s", tipo);
+  scanf("%49s", tipo);
   printf("Bateria: ");
   scanf("%f", &bateria);
   printf("Autonomia: ");
@@ -70,8 +70,7 @@ void inserirMeio(Meio *meios)
   printf("Custo: ");
   scanf("%f", &custo);
   printf("GeoCode: ");
-  scanf("%99[^\n]s", geoCode);
-  getchar();
+  scanf("%99s", geoCode);
 
   while (1)
   {
@@ -120,7 +119,25 @@ void listarMeios(Meio *meios)
   printf("-----------------------------------------------------\n");
   while (meios != NULL)
   {
-    printf("| %-2d | %-12s | %06.2f%% |  %06.2fKm | %-7d |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->id_cliente);
+    printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-7d |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->id_cliente);
+    meios = meios->seguinte;
+  }
+  printf("-----------------------------------------------------\n");
+}
+
+// Listagem de todos os meios numa tabela formatada com informação mais detalhada para o cliente
+void listarMeiosParaCliente(Meio *meios)
+{
+  printf("\n--  LISTA DE MEIOS   --------------------------------\n");
+  printf("-----------------------------------------------------\n");
+  printf("| ID | Tipo         | Bateria | Autonomia |  €/seg  |\n");
+  printf("-----------------------------------------------------\n");
+  while (meios != NULL)
+  {
+    if (meios->id_cliente == 0)
+    {
+      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm |  %4.2f€  |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->custo);
+    }    
     meios = meios->seguinte;
   }
   printf("-----------------------------------------------------\n");

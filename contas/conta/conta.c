@@ -66,13 +66,13 @@ void listarContas(Conta *contas, char tipo[])
     {
       printf("\n-- LISTA DE CLIENTES ------------------\n");
       printf("---------------------------------------\n");
-      printf("| ID | Nome         | Saldo | ID Meio |\n");
+      printf("| ID | Nome       |  Saldo  | ID Meio |\n");
       printf("---------------------------------------\n");
       while (contas != NULL)
       {
         if (!strcmp(contas->tipo, "cliente"))
         {
-          printf("| %-2d | %-12s | %05.2f | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
+          printf("| %-2d | %-10s | %6.2f€ | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
         }
         contas = contas->seguinte;
       }
