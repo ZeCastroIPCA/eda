@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "conta.h"
 #include "../../manager/fileManager.h"
 #include "../../meios/meio.h"
@@ -61,9 +62,13 @@ void guardarContas(Conta *contas)
     if (fp == NULL)
     {
       printf("O ficheiro contas.txt não existe!\n");
-    } else if (fpb == NULL) {
+    }
+    else if (fpb == NULL)
+    {
       printf("O ficheiro contas.bin não existe!\n");
-    } else {
+    }
+    else
+    {
       printf("Houve um erro na pesquisa dos ficheiros!\n");
     }
   }
@@ -109,13 +114,20 @@ void listarContas(Conta *contas, char tipo[])
 }
 
 // Alterar uma conta a partir do seu código
-void alterarConta(Conta *contas, int cod)
+void alterarConta(Conta *contas)
 {
+  int id;
+
+  listarContas(contas, "cliente");
+
+  printf("\nID a alterar:");
+  scanf("%d", &id);
+
   Conta *aux = contas;
-  aux = existeConta(contas, cod);
+  aux = existeConta(contas, id);
   if (aux == NULL)
   {
-    printf("Conta com ID %d não encontrada!\n", cod);
+    printf("Conta com ID %d não encontrada!\n", id);
     return;
   }
 
@@ -132,12 +144,36 @@ void alterarConta(Conta *contas, int cod)
   printf("Saldo: ");
   scanf("%f", &aux->saldo);
 
-  printf("\nInformações do cliente %d alteradas com sucesso!\n", cod);
+  printf("\nInformações do cliente %d alteradas com sucesso!\n", id);
 }
 
 // Remove uma conta a partir do seu código
-void removerConta(Conta *contas, int cod)
+void removerConta(Conta *contas, int cod, int who)
 {
+  int conta_op;
+
+  if (who == 1)
+  {
+    printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", cod);
+    scanf("%d", &conta_op);
+    while (conta_op != 1 && conta_op != 0)
+    {
+      printf("\nOpção inválida! Tente novamente.\n");
+      printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", cod);
+      scanf("%d", &conta_op);
+    }
+    if (conta_op == 0)
+    {
+      return;
+    }
+  }
+  else
+  {
+    listarContas(contas, "cliente");
+    printf("\nID a eliminar:");
+    scanf("%d", &cod);
+  }
+
   Conta *anterior = contas, *atual = contas, *aux;
   if (atual == NULL)
   {
@@ -148,6 +184,14 @@ void removerConta(Conta *contas, int cod)
   {
     aux = atual->seguinte;
     free(atual);
+    if (who == 1)
+    {
+      printf("\nA sua conta foi apagada com sucesso!\n");
+    }
+    else
+    {
+      printf("Conta com ID %d apagada com sucesso!\n", cod);
+    }
     return;
   }
   while ((atual != NULL) && (atual->codigo != cod))
@@ -157,11 +201,108 @@ void removerConta(Conta *contas, int cod)
   }
   if (atual == NULL)
   {
-    printf("Conta não encontrada!\n");
+    if (who == 1)
+    {
+      printf("\nNão foi possível apagar a sua conta!\n");
+    }
+    else
+    {
+      printf("Conta com ID %d não encontrada!\n", cod);
+    }
     return;
   }
   anterior->seguinte = atual->seguinte;
   free(atual);
+  if (who == 1)
+  {
+    printf("\nA sua conta foi apagada com sucesso!\n");
+  }
+  else
+  {
+    printf("Conta com ID %d apagada com sucesso!\n", cod);
+  }
+}
+
+void alugarMeio(Conta *contas, Conta *conta, Meio *meios)
+{
+  int conta_op, aluguer_op, meio_cod;
+
+  // variável auxiliar da conta do cliente
+  Conta *conta_aux = conta;
+
+  // meio alugado pelo cliente
+  Meio *meio = NULL;
+
+  // encontrar o meio alugado pelo cliente
+  Meio *meio_aux = meios;
+  while (meio_aux != NULL)
+  {
+    if (meio_aux->id_cliente == conta_aux->codigo)
+    {
+      meio = meio_aux;
+      break;
+    }
+    meio_aux = meio_aux->seguinte;
+  }
+
+  if (conta_aux->meio_id != 0)
+  {
+    printf("Pretente terminar o aluguer atual?\n(1 - Sim | 0 - Não):");
+    scanf("%d", &aluguer_op);
+    while (aluguer_op != 1 && aluguer_op != 0)
+    {
+      printf("\nOpção inválida! Tente novamente.\n");
+      printf("Pretente terminar o aluguer atual?\n(1 - Sim | 0 - Não):");
+      scanf("%d", &aluguer_op);
+    }
+    if (aluguer_op == 1)
+    {
+      conta_aux->meio_id = 0;
+      meio->id_cliente = 0;
+      int tempo_alugado = time(NULL) - meio->inicio_aluguer;
+      conta_aux->saldo -= tempo_alugado * meio->custo;
+      meio->inicio_aluguer = 0;
+      printf("\nAluguer terminado com sucesso!\n");
+    } else {
+      printf("\nO aluguer do meio %d não foi terminado!\n", conta_aux->meio_id);
+    }
+    return;
+  }
+  listarMeiosParaCliente(meios);
+  printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
+  scanf("%d", &meio_cod);
+  if (conta_aux->saldo < 0.5)
+  {
+    printf("\nNão tem saldo suficiente para alugar um meio!\n");
+    return;
+  }
+  else if (existeMeio(meios, meio_cod))
+  {
+    conta_aux->meio_id = meio_cod;
+    meio = existeMeio(meios, meio_cod);
+    meio->id_cliente = conta_aux->codigo;
+    meio->inicio_aluguer = time(NULL);
+    conta_aux->saldo -= 0.5;
+    printf("\nMeio alugado com sucesso!\n");
+    return;
+  }
+  printf("\nO meio que pretende alugar não existe!\n");
+  return;
+}
+
+// Carregar saldo na conta
+void carregarSaldo(Conta *conta)
+{
+  float saldoCarregar;
+
+  Conta *aux = conta;
+
+  printf("Carregar saldo:");
+  scanf("%f", &saldoCarregar);
+
+  aux->saldo += saldoCarregar;
+
+  printf("\nSaldo carregado com sucesso!\n");
 }
 
 // Determinar existência do 'codigo' na lista ligada 'contas'
@@ -170,7 +311,8 @@ Conta *existeConta(Conta *contas, int cod)
 {
   while (contas != NULL)
   {
-    if (contas->codigo == cod){
+    if (contas->codigo == cod)
+    {
       return contas;
     }
     contas = contas->seguinte;

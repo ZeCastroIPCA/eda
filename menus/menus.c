@@ -10,23 +10,7 @@
 
 void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
-	int op, conta_op, aluguer_op, meio_cod;
-	float saldoCarregar;
-
-	// meio alugado pelo cliente
-	Meio *meio = NULL;
-
-	// encontrar o meio alugado pelo cliente
-	Meio *meio_aux = meios;
-	while (meio_aux != NULL)
-	{
-		if (meio_aux->id_cliente == conta->codigo)
-		{
-			meio = meio_aux;
-			break;
-		}
-		meio_aux = meio_aux->seguinte;
-	}
+	int op;
 
 	while (op != 0)
 	{
@@ -42,57 +26,16 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 		switch (op)
 		{
 		case 1:
-			if (conta->meio_id != 0)
-			{
-				printf("Pretente terminar o aluguer atual?\n(1 - Sim | 0 - Não):");
-				scanf("%d", &aluguer_op);
-				if (aluguer_op)
-				{
-					conta->meio_id = 0;
-					meio->id_cliente = 0;
-					int tempo_alugado = time(NULL) - meio->inicio_aluguer;
-					conta->saldo -= tempo_alugado * meio->custo;
-					meio->inicio_aluguer = 0;
-				}
-				break;
-			}
-			listarMeiosParaCliente(meios);
-			printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
-			scanf("%d", &meio_cod);
-			if (conta->saldo < 0.5)
-			{
-				printf("\nNão tem saldo suficiente para alugar um meio!\n");
-				break;
-			}
-			else if (existeMeio(meios, meio_cod))
-			{
-				conta->meio_id = meio_cod;
-				meio = existeMeio(meios, meio_cod);
-				meio->id_cliente = conta->codigo;
-				meio->inicio_aluguer = time(NULL);
-				conta->saldo -= 0.5;
-				printf("\nMeio alugado com sucesso!\n");
-				break;
-			}
-			printf("\nO meio que pretende alugar não existe!\n");
+			alugarMeio(contas, conta, meios);
 			break;
 		case 2:
-			printf("Carregar saldo:");
-			scanf("%f", &saldoCarregar);
-			conta->saldo += saldoCarregar;
-			printf("\nSaldo carregado com sucesso!\n");
+			carregarSaldo(conta);
 			break;
 		case 3:
-			printf("\nTem a certeza que pretende apagar a sua conta?\nId: %d\n(1 - Sim | 0 - Não):", conta->codigo);
-			scanf("%d", &conta_op);
-			if (conta_op)
-			{
-				removerConta(contas, conta->codigo);
-				printf("\nA sua conta foi apagada com sucesso!\n");
-				op = 0;
-				break;
-			}
-			printf("\nA sua conta não foi apagada!\n\n");
+			// O parametro 1 indica que é o cliente que está a apagar a conta
+			removerConta(contas, conta->codigo, 1);
+			// A definição de op a 0 faz com que o programa volte ao menu anterior
+			op = 0;
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
@@ -103,8 +46,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 
 void menuGestorMeios(Meio *meios)
 {
-	int op, id;
-	char geo[100];
+	int op;
 	do
 	{
 		printf("\n------------------------------\n");
@@ -127,25 +69,13 @@ void menuGestorMeios(Meio *meios)
 			listarMeios(meios);
 			break;
 		case 3:
-			printf("\nGeo código:");
-			scanf("%99s", geo);
-			listarMeiosPorGeoCode(meios, geo);
+			listarMeiosPorGeoCode(meios);
 			break;
 		case 4:
-			printf("\nID a alterar:");
-			scanf("%d", &id);
-			alterarMeio(meios, id);
+			alterarMeio(meios);
 			break;
 		case 5:
-			printf("\nID a eliminar:");
-			scanf("%d", &id);
-			if (id)
-			{
-				removerMeio(meios, id);
-				printf("\nO meio %d foi apagado com sucesso!\n", id);
-				break;
-			}
-			printf("\nO meio %d não foi apagado!\n\n", id);
+			removerMeio(meios);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
@@ -157,7 +87,6 @@ void menuGestorMeios(Meio *meios)
 void menuGestorContas(Conta *contas)
 {
 	int op;
-	int id;
 	do
 	{
 		printf("\n------------------------------\n");
@@ -184,14 +113,12 @@ void menuGestorContas(Conta *contas)
 			listarContas(contas, "gestor");
 			break;
 		case 4:
-			printf("\nID a alterar:");
-			scanf("%d", &id);
-			alterarConta(contas, id);
+			alterarConta(contas);
 			break;
 		case 5:
-			printf("\nID a eliminar:");
-			scanf("%d", &id);
-			removerConta(contas, id);
+			// O valor do segundo parametro a 0 é meramente ilustrativo, pois o valor é pedido ao utilizador dentro da função
+			// O valor do terceiro parametro a 0 indica que é um gestor que está a apagar a conta
+			removerConta(contas, 0, 0);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");

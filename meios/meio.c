@@ -186,75 +186,102 @@ void listarMeiosParaCliente(Meio *meios)
 }
 
 // Listagem de meios por geocode
-void listarMeiosPorGeoCode(Meio *meios, char geoCode[])
+void listarMeiosPorGeoCode(Meio *meios)
 {
-  printf("\n--  LISTA DE MEIOS   --------------------------------\n");
+  char geo[100];
+  int count = 0;
+
+  printf("\nGeo Código:");
+	scanf("%99s", geo);
+
+  printf("\n---  LISTA DE MEIOS EM %s  ---\n", geo);
   printf("-----------------------------------------------------\n");
   printf("| ID | Tipo         | Bateria | Autonomia | Geocode |\n");
   printf("-----------------------------------------------------\n");
   while (meios != NULL)
   {
-    if (strcmp(meios->geoCode, geoCode) == 0)
+    if (strcmp(meios->geoCode, geo) == 0)
     {
       printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-7s |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->geoCode);
+      count++;
     }
     meios = meios->seguinte;
+  }
+  if (meios == NULL && count == 0)
+  {
+    printf("|     Não existem meios no Geo Código %-9s     |\n", geo);
   }
   printf("-----------------------------------------------------\n");
 }
 
 // Alterar um meio a partir do seu código
-void alterarMeio(Meio *meios, int cod)
+void alterarMeio(Meio *meios)
 {
+  int id;
+
+  listarMeios(meios);
+
+  printf("\nID a alterar:");
+	scanf("%d", &id);
+
   Meio *aux = meios;
-  aux = existeMeio(meios, cod);
+  aux = existeMeio(meios, id);
   if (aux == NULL)
   {
-    printf("Não existe nenhum meio com o código %d!\n", cod);
+    printf("Não existe nenhum meio com o código %d!\n", id);
     return;
   }
 
   printf("\nTipo: ");
   scanf("%s", aux->tipo);
-  printf("\nBateria: ");
+  printf("Bateria: ");
   scanf("%f", &aux->bateria);
-  printf("\nAutonomia: ");
+  printf("Autonomia: ");
   scanf("%f", &aux->autonomia);
-  printf("\nCusto: ");
+  printf("Custo: ");
   scanf("%f", &aux->custo);
-  printf("\nGeoCode: ");
+  printf("GeoCode: ");
   scanf("%s", aux->geoCode);
 
-  printf("\n\nInformações do meio %d alteradas com sucesso!\n", cod);
+  printf("\nInformações do meio %d alteradas com sucesso!\n", id);
 }
 
 // Remover um meio a partir do seu código
-void removerMeio(Meio *meios, int cod)
+void removerMeio(Meio *meios)
 {
+  int id;
+
+  listarMeios(meios);
+
+  printf("\nID a eliminar:");
+	scanf("%d", &id);
+
   Meio *anterior = meios, *atual = meios, *aux;
   if (atual == NULL)
   {
     printf("Não existem meios registados!\n");
     return;
   }
-  if (atual->codigo == cod) // remoção do 1º registo
+  if (atual->codigo == id) // remoção do 1º registo
   {
     aux = atual->seguinte;
     free(atual);
+    printf("\nO meio %d foi apagado com sucesso!\n", id);
     return;
   }
-  while ((atual != NULL) && (atual->codigo != cod))
+  while ((atual != NULL) && (atual->codigo != id))
   {
     anterior = atual;
     atual = atual->seguinte;
   }
   if (atual == NULL)
   {
-    printf("Meio não encontrado!\n");
+    printf("\nO meio %d não foi apagado!\n", id);
     return;
   }
   anterior->seguinte = atual->seguinte;
   free(atual);
+  printf("\nO meio %d foi apagado com sucesso!\n", id);
 }
 
 // Determinar existência do 'codigo' na lista ligada 'meios'

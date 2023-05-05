@@ -1,5 +1,6 @@
 #pragma once
 #include <stdio.h>
+#include "../../meios/meio.h"
 
 typedef struct contas
 {
@@ -16,8 +17,10 @@ typedef struct contas
 } Conta;
 
 void listarContas(Conta *contas, char tipo[]);
-void alterarConta(Conta *contas, int cod);
-void removerConta(Conta *contas, int cod);
+void alterarConta(Conta *contas);
+void removerConta(Conta *contas, int cod, int who);
+void alugarMeio(Conta *contas, Conta *conta, Meio *meios);
+void carregarSaldo(Conta *conta);
 
 Conta *existeConta(Conta *contas, int cod);
 int verificarEmail(Conta *contas, char email[]);
