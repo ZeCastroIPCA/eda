@@ -1,6 +1,8 @@
 #pragma once
 #include <stdio.h>
 #include <time.h>
+#include "../manager/fileManager.h"
+#include "../grafos/grafo.h"
 
 typedef struct meios
 {
@@ -11,11 +13,10 @@ typedef struct meios
     int id_cliente;
     float custo;
     time_t inicio_aluguer;
-    char geoCode[100];
     struct meios *seguinte;
 } Meio;
 
-void inserirMeio(Meio *meios); // Inserção de um novo meio
+void inserirMeio(Meio *meios, Grafo *grafo); // Inserir meio de transporte e adicionar localização com geocódigo no grafo
 void listarMeios(Meio *meios); // listar na consola o conteúdo da lista ligada meios
 void listarMeiosParaCliente(Meio *meios); // listar todos os meios disponíveis para aluguer por ordem descrescente de autonomia
 void listarMeiosPorGeoCode(Meio *meios); // listar os meios numa determinada localização
@@ -24,5 +25,5 @@ void removerMeio(Meio *meios); // Remover um meio a partir do seu código
 
 Meio *existeMeio(Meio *meios, int codigo); // Determinar existência do 'codigo' na lista ligada 'meios'
 
-Meio *lerMeios();
-void guardarMeios(Meio *meios);
+Meio *lerMeios(); // Ler os meios de um ficheiro
+void guardarMeios(Meio *meios); // Guardar os meios num ficheiro

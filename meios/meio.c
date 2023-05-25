@@ -2,7 +2,6 @@
 #include <string.h>
 #include <time.h>
 #include "meio.h"
-#include "../manager/fileManager.h"
 
 // Ler meios do ficheiro
 Meio *lerMeios()
@@ -22,10 +21,10 @@ Meio *lerMeios()
       printf("\nMeios disponíveis:\n");
       while (!feof(fp))
       {
-        fscanf(fp, "%d;%[^;];%f;%f;%d;%f;%ld;%s\n", &cod, tipo, &bat, &aut, &id_cliente, &custo, &inicio_aluguer, geoCode);
-        aux = inserirMeioFile(aux, cod, tipo, bat, aut, id_cliente, custo, inicio_aluguer, geoCode);
+        fscanf(fp, "%d;%[^;];%f;%f;%d;%f;%ld\n", &cod, tipo, &bat, &aut, &id_cliente, &custo, &inicio_aluguer);
+        aux = inserirMeioFile(aux, cod, tipo, bat, aut, id_cliente, custo, inicio_aluguer);
         novo = aux;
-        printf("%d %s %.2f %.2f %d %.2f %ld %s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
+        printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       }
       fclose(fp);
     }
@@ -44,8 +43,8 @@ void guardarMeios(Meio *meios)
     Meio *aux = meios;
     while (aux != NULL)
     {
-      fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld;%s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
-      fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld;%s\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer, aux->geoCode);
+      fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
+      fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       aux = aux->seguinte;
     }
     fclose(fp);
@@ -57,11 +56,88 @@ void guardarMeios(Meio *meios)
     if (fp == NULL)
     {
       printf("O ficheiro meios.txt não existe!\n");
-    } else if (fpb == NULL) {
+    }
+    else if (fpb == NULL)
+    {
       printf("O ficheiro meios.bin não existe!\n");
-    } else {
+    }
+    else
+    {
       printf("Houve um erro na pesquisa dos ficheiros!\n");
     }
+  }
+}
+
+// Inserir meio de transporte e adicionar localização com geocódigo no grafo
+void inserirMeio(Meio *meios, Grafo *grafo)
+{
+  int cod = meios->codigo;
+  char tipo[50], geoCode[100];
+  float bateria, autonomia, custo;
+
+  printf("\nTipo: ");
+  scanf("%49s", tipo);
+  printf("Bateria: ");
+  scanf("%f", &bateria);
+  printf("Autonomia: ");
+  scanf("%f", &autonomia);
+  printf("Custo: ");
+  scanf("%f", &custo);
+  printf("GeoCode: ");
+  scanf("%99s", geoCode);
+
+  // Verificar se existe uma localização com o geocódigo inserido
+  while (!existeVertice(*grafo, geoCode))
+  {
+    printf("Não existe nenhuma localização com o geocódigo %s!\n", geocodigo);
+    printf("Insira um geocódigo válido:");
+    scanf("%99s", geoCode);
+  }
+
+  while (1)
+  {
+    if (!existeMeio(meios, cod))
+    {
+      Meio *aux = meios;
+      Meio *novo = malloc(sizeof(struct meios));
+      if (novo != NULL)
+      {
+        novo->codigo = cod;
+        strcpy(novo->tipo, tipo);
+        novo->bateria = bateria;
+        novo->autonomia = autonomia;
+        novo->id_cliente = 0;
+        novo->custo = custo;
+        strcpy(novo->geoCode, geoCode);
+
+        // percorrer a lista ligada do meio até ao fim 
+        while (aux->seguinte != NULL)
+        {
+          aux = aux->seguinte;
+        }
+
+        // adicionar o novo meio no fim da lista ligada do meio
+        aux->seguinte = novo;
+
+        // percorrer a lista ligada do grafo até ao fim
+        while (*grafo->meios->seguinte != NULL)
+        {
+          *grafo = *grafo->meios->seguinte;
+        }
+
+        // adicionar o novo meio no fim da lista ligada do grafo
+        *grafo->meios = novo;
+        printf("\nMeio criado com sucesso!\n");
+        break;
+      }
+      else
+      {
+        printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
+      }
+      break;
+    }
+    else
+      cod++;
   }
 }
 
@@ -142,25 +218,30 @@ void listarMeiosParaCliente(Meio *meios)
   // Contar o número de meios
   int count = 0;
   Meio *aux = meios;
-  while (aux != NULL) {
+  while (aux != NULL)
+  {
     count++;
     aux = aux->seguinte;
   }
 
   // Criar um array de meios para poder ordenar
-  Meio **meios_array = malloc(count * sizeof(Meio*));
+  Meio **meios_array = malloc(count * sizeof(Meio *));
   aux = meios;
   int i = 0;
-  while (aux != NULL) {
+  while (aux != NULL)
+  {
     meios_array[i] = aux;
     aux = aux->seguinte;
     i++;
   }
 
   // Ordenar o array por ordem decrescente de autonomia
-  for (int i = 0; i < count - 1; i++) {
-    for (int j = i + 1; j < count; j++) {
-      if (meios_array[i]->autonomia < meios_array[j]->autonomia) {
+  for (int i = 0; i < count - 1; i++)
+  {
+    for (int j = i + 1; j < count; j++)
+    {
+      if (meios_array[i]->autonomia < meios_array[j]->autonomia)
+      {
         Meio *aux = meios_array[i];
         meios_array[i] = meios_array[j];
         meios_array[j] = aux;
@@ -173,9 +254,11 @@ void listarMeiosParaCliente(Meio *meios)
   printf("-----------------------------------------------------\n");
   printf("| ID | Tipo         | Bateria | Autonomia |  €/seg  |\n");
   printf("-----------------------------------------------------\n");
-  for (int i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++)
+  {
     Meio *meio = meios_array[i];
-    if (meio->id_cliente == 0) {
+    if (meio->id_cliente == 0)
+    {
       printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm |  %4.2f€  |\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia, meio->custo);
     }
   }
@@ -192,7 +275,7 @@ void listarMeiosPorGeoCode(Meio *meios)
   int count = 0;
 
   printf("\nGeo Código:");
-	scanf("%99s", geo);
+  scanf("%99s", geo);
 
   printf("\n---  LISTA DE MEIOS EM %s  ---\n", geo);
   printf("-----------------------------------------------------\n");
@@ -222,9 +305,9 @@ void alterarMeio(Meio *meios)
   listarMeios(meios);
 
   printf("\nID a alterar:");
-	scanf("%d", &id);
+  scanf("%d", &id);
 
-  Meio *aux = meios;
+  Meio *aux = NULL;
   aux = existeMeio(meios, id);
   if (aux == NULL)
   {
@@ -254,7 +337,7 @@ void removerMeio(Meio *meios)
   listarMeios(meios);
 
   printf("\nID a eliminar:");
-	scanf("%d", &id);
+  scanf("%d", &id);
 
   Meio *anterior = meios, *atual = meios, *aux;
   if (atual == NULL)
@@ -285,12 +368,12 @@ void removerMeio(Meio *meios)
 }
 
 // Determinar existência do 'codigo' na lista ligada 'meios'
-// devolve 1 se existir ou 0 caso contrário
 Meio *existeMeio(Meio *meios, int cod)
 {
   while (meios != NULL)
   {
-    if (meios->codigo == cod){
+    if (meios->codigo == cod)
+    {
       return meios;
     }
     meios = meios->seguinte;

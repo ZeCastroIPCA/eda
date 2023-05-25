@@ -46,7 +46,7 @@ Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char 
 }
 
 // inserir meios no ficheiro
-Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float autonomia, int id_cliente, float custo, time_t inicio_aluguer, char geoCode[])
+Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float autonomia, int id_cliente, float custo, time_t inicio_aluguer)
 {
   if (!existeMeio(meios, cod))
   {
@@ -60,7 +60,6 @@ Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float au
       novo->id_cliente = id_cliente;
       novo->custo = custo;
       novo->inicio_aluguer = inicio_aluguer;
-      strcpy(novo->geoCode, geoCode);
 
       novo->seguinte = meios;
       return (novo);

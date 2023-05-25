@@ -7,18 +7,42 @@
 #include "contas/conta/conta.h"
 #include "manager/fileManager.h"
 #include "meios/meio.h"
+#include "grafos/grafo.h"
 
 int main()
 {
-	Conta *contas = NULL; // Lista ligada vazia
-	Meio *meios = NULL;	// Lista ligada vazia
+	// Pointer de contas, meios e grafo
+	Conta *contas = NULL;
+	Meio *meios = NULL;
+	Grafo *grafo = NULL;
+
+	// Ler contas, meios e grafo
 	contas = lerContas();
 	meios = lerMeios();
+	//grafo = lerGrafo();
+
+	// Pointer de grafo
+	grafo = criarGrafo();
+	printf("----------------\n");
+    printf("Vertices adjacentes a thesaurus.sharers.blizzards\n");
+    listarAdjacentes(grafo, "thesaurus.sharers.blizzards");
+    printf("----------------\n");
+    printf("Meios de transporte existentes na localizacao babbled.trifling.consoled\n");
+    listarMeiosGrafo(grafo, "dimly.nuttier.pitch");
+    printf("----------------\n");
+
+
+
+	// Menu principal
 	menuPrincipal(contas, meios);
+
+	// Guardar contas e meios
 	printf("A guardar contas...\n");
 	guardarContas(contas);
 	printf("A guardar meios...\n");
 	guardarMeios(meios);
+	// printf("A guardar grafo...\n");
+	// guardarGrafo(grafo);
 
 	// libertar a memória alocada
 	Conta *conta_aux = contas;

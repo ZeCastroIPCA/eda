@@ -4,7 +4,6 @@
 #include <time.h>
 #include "conta.h"
 #include "../../manager/fileManager.h"
-#include "../../meios/meio.h"
 
 // ler contas
 Conta *lerContas()

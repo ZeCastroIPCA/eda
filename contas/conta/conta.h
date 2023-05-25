@@ -16,14 +16,14 @@ typedef struct contas
     struct contas *seguinte;
 } Conta;
 
-void listarContas(Conta *contas, char tipo[]);
-void alterarConta(Conta *contas);
-void removerConta(Conta *contas, int cod, int who);
-void alugarMeio(Conta *contas, Conta *conta, Meio *meios);
-void carregarSaldo(Conta *conta);
+void listarContas(Conta *contas, char tipo[]); // listar na consola o conteúdo da lista ligada contas
+void alterarConta(Conta *contas); // Alterar uma conta a partir do seu código
+void removerConta(Conta *contas, int cod, int who); // Remover uma conta a partir do seu código
+void alugarMeio(Conta *contas, Conta *conta, Meio *meios); // Alugar um meio de mobilidade elétrica
+void carregarSaldo(Conta *conta); // Carregar saldo na conta
 
-Conta *existeConta(Conta *contas, int cod);
-int verificarEmail(Conta *contas, char email[]);
+Conta *existeConta(Conta *contas, int cod); // Determinar existência do 'codigo' na lista ligada 'contas'
+int verificarEmail(Conta *contas, char email[]); // Determinar existência do 'email' na lista ligada 'contas'
 
-Conta *lerContas();
-void guardarContas(Conta *contas);
+Conta *lerContas(); // Ler as contas de um ficheiro
+void guardarContas(Conta *contas); // Guardar as contas num ficheiro
