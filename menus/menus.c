@@ -3,10 +3,10 @@
 #include <string.h>
 #include <stdbool.h>
 #include <time.h>
+#include "menus.h"
 #include "../contas/conta/conta.h"
 #include "../contas/auth/auth.h"
 #include "../meios/meio.h"
-#include "menus.h"
 
 void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
@@ -44,7 +44,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 	};
 }
 
-void menuGestorMeios(Meio *meios)
+void menuGestorMeios(Meio *meios, Grafo *grafo)
 {
 	int op;
 	do
@@ -63,16 +63,16 @@ void menuGestorMeios(Meio *meios)
 		switch (op)
 		{
 		case 1:
-			inserirMeio(meios);
+			inserirMeio(meios, grafo);
 			break;
 		case 2:
 			listarMeios(meios);
 			break;
 		case 3:
-			listarMeiosPorGeoCode(meios);
+			listarMeiosPorGeoCode(grafo);
 			break;
 		case 4:
-			alterarMeio(meios);
+			alterarMeio(meios, grafo);
 			break;
 		case 5:
 			removerMeio(meios);
@@ -127,7 +127,7 @@ void menuGestorContas(Conta *contas)
 	} while (op != 0);
 }
 
-void menuGestorPrincipal(Conta *contas, Meio *meios)
+void menuGestorPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 {
 	int op;
 	do
@@ -143,7 +143,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 		switch (op)
 		{
 		case 1:
-			menuGestorMeios(meios);
+			menuGestorMeios(meios, grafo);
 			break;
 		case 2:
 			menuGestorContas(contas);
@@ -155,7 +155,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios)
 	} while (op != 0);
 }
 
-void menuPrincipal(Conta *contas, Meio *meios)
+void menuPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 {
 	int op;
 	do
@@ -171,7 +171,7 @@ void menuPrincipal(Conta *contas, Meio *meios)
 		switch (op)
 		{
 		case 1:
-			handleLogin(contas, meios);
+			handleLogin(contas, meios, grafo);
 			break;
 		case 2:
 			// O parametro 0 indica que é um registo de cliente

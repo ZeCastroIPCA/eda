@@ -2,6 +2,8 @@
 #include <string.h>
 #include <time.h>
 #include "meio.h"
+#include "../manager/fileManager.h"
+#include "../grafos/grafo.h"
 
 // Ler meios do ficheiro
 Meio *lerMeios()
@@ -87,9 +89,9 @@ void inserirMeio(Meio *meios, Grafo *grafo)
   scanf("%99s", geoCode);
 
   // Verificar se existe uma localização com o geocódigo inserido
-  while (!existeVertice(*grafo, geoCode))
+  while (!existeVertice(grafo, geoCode))
   {
-    printf("Não existe nenhuma localização com o geocódigo %s!\n", geocodigo);
+    printf("Não existe nenhuma localização com o geocódigo %s!\n", geoCode);
     printf("Insira um geocódigo válido:");
     scanf("%99s", geoCode);
   }
@@ -108,7 +110,6 @@ void inserirMeio(Meio *meios, Grafo *grafo)
         novo->autonomia = autonomia;
         novo->id_cliente = 0;
         novo->custo = custo;
-        strcpy(novo->geoCode, geoCode);
 
         // percorrer a lista ligada do meio até ao fim 
         while (aux->seguinte != NULL)
@@ -120,13 +121,15 @@ void inserirMeio(Meio *meios, Grafo *grafo)
         aux->seguinte = novo;
 
         // percorrer a lista ligada do grafo até ao fim
-        while (*grafo->meios->seguinte != NULL)
+        while (grafo->meios->seguinte != NULL)
         {
-          *grafo = *grafo->meios->seguinte;
+          *grafo->meios = *grafo->meios->seguinte;
         }
 
         // adicionar o novo meio no fim da lista ligada do grafo
-        *grafo->meios = novo;
+        *grafo->meios = *novo;
+        printf("\nGrafo: %d\n", grafo->meios->codigo);
+        printf("\nMeios: %d\n", aux->codigo);
         printf("\nMeio criado com sucesso!\n");
         break;
       }
@@ -142,60 +145,60 @@ void inserirMeio(Meio *meios, Grafo *grafo)
 }
 
 // Inserção de um novo meio
-void inserirMeio(Meio *meios)
-{
-  int cod = meios->codigo;
-  char tipo[50], geoCode[100];
-  float bateria, autonomia, custo;
+// void inserirMeio(Meio *meios)
+// {
+//   int cod = meios->codigo;
+//   char tipo[50], geoCode[100];
+//   float bateria, autonomia, custo;
 
-  printf("\nTipo: ");
-  scanf("%49s", tipo);
-  printf("Bateria: ");
-  scanf("%f", &bateria);
-  printf("Autonomia: ");
-  scanf("%f", &autonomia);
-  printf("Custo: ");
-  scanf("%f", &custo);
-  printf("GeoCode: ");
-  scanf("%99s", geoCode);
+//   printf("\nTipo: ");
+//   scanf("%49s", tipo);
+//   printf("Bateria: ");
+//   scanf("%f", &bateria);
+//   printf("Autonomia: ");
+//   scanf("%f", &autonomia);
+//   printf("Custo: ");
+//   scanf("%f", &custo);
+//   printf("GeoCode: ");
+//   scanf("%99s", geoCode);
 
-  while (1)
-  {
-    if (!existeMeio(meios, cod))
-    {
-      Meio *aux = meios;
-      Meio *novo = malloc(sizeof(struct meios));
-      if (novo != NULL)
-      {
-        novo->codigo = cod;
-        strcpy(novo->tipo, tipo);
-        novo->bateria = bateria;
-        novo->autonomia = autonomia;
-        novo->id_cliente = 0;
-        novo->custo = custo;
-        strcpy(novo->geoCode, geoCode);
+//   while (1)
+//   {
+//     if (!existeMeio(meios, cod))
+//     {
+//       Meio *aux = meios;
+//       Meio *novo = malloc(sizeof(struct meios));
+//       if (novo != NULL)
+//       {
+//         novo->codigo = cod;
+//         strcpy(novo->tipo, tipo);
+//         novo->bateria = bateria;
+//         novo->autonomia = autonomia;
+//         novo->id_cliente = 0;
+//         novo->custo = custo;
+//         strcpy(novo->geoCode, geoCode);
 
-        // percorrer a lista ligada até ao fim
-        while (aux->seguinte != NULL)
-        {
-          aux = aux->seguinte;
-        }
+//         // percorrer a lista ligada até ao fim
+//         while (aux->seguinte != NULL)
+//         {
+//           aux = aux->seguinte;
+//         }
 
-        // adicionar o novo meio no fim da lista ligada
-        aux->seguinte = novo;
-        printf("\nMeio criado com sucesso!\n");
-        break;
-      }
-      else
-      {
-        printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
-      }
-      break;
-    }
-    else
-      cod++;
-  }
-}
+//         // adicionar o novo meio no fim da lista ligada
+//         aux->seguinte = novo;
+//         printf("\nMeio criado com sucesso!\n");
+//         break;
+//       }
+//       else
+//       {
+//         printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
+//       }
+//       break;
+//     }
+//     else
+//       cod++;
+//   }
+// }
 
 // Listagem de todos os meios numa tabela formatada
 void listarMeios(Meio *meios)
@@ -269,7 +272,7 @@ void listarMeiosParaCliente(Meio *meios)
 }
 
 // Listagem de meios por geocode
-void listarMeiosPorGeoCode(Meio *meios)
+void listarMeiosPorGeoCode(Grafo *grafo)
 {
   char geo[100];
   int count = 0;
@@ -281,16 +284,16 @@ void listarMeiosPorGeoCode(Meio *meios)
   printf("-----------------------------------------------------\n");
   printf("| ID | Tipo         | Bateria | Autonomia | Geocode |\n");
   printf("-----------------------------------------------------\n");
-  while (meios != NULL)
+  while (grafo != NULL)
   {
-    if (strcmp(meios->geoCode, geo) == 0)
+    if (strcmp(grafo->vertice, geo) == 0)
     {
-      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-7s |\n", meios->codigo, meios->tipo, meios->bateria, meios->autonomia, meios->geoCode);
+      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-7s |\n", grafo->meios->codigo, grafo->meios->tipo, grafo->meios->bateria, grafo->meios->autonomia, grafo->vertice);
       count++;
     }
-    meios = meios->seguinte;
+    grafo = grafo->seguinte;
   }
-  if (meios == NULL && count == 0)
+  if (grafo == NULL && count == 0)
   {
     printf("|     Não existem meios no Geo Código %-9s     |\n", geo);
   }
@@ -298,9 +301,11 @@ void listarMeiosPorGeoCode(Meio *meios)
 }
 
 // Alterar um meio a partir do seu código
-void alterarMeio(Meio *meios)
+void alterarMeio(Meio *meios, Grafo *grafo)
 {
   int id;
+
+  char geocode[100];
 
   listarMeios(meios);
 
@@ -323,8 +328,17 @@ void alterarMeio(Meio *meios)
   scanf("%f", &aux->autonomia);
   printf("Custo: ");
   scanf("%f", &aux->custo);
-  printf("GeoCode: ");
-  scanf("%s", aux->geoCode);
+  do {
+    printf("Geo Código: ");
+    scanf("%s", geocode);
+    if (existeVertice(grafo, geocode))
+    {
+      //TODO - Alterar o geocode do meio e remover o vértice do grafo
+      // Remover o meio do grafo e voltar a inserir no novo grafo
+      //removerMeioGrafo(grafo, aux->codigo);
+      //inserirMeioPorGeoCode(grafo, geocode);
+    }
+  } while (!existeVertice(grafo, geocode));
 
   printf("\nInformações do meio %d alteradas com sucesso!\n", id);
 }

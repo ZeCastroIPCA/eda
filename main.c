@@ -22,7 +22,7 @@ int main()
 	//grafo = lerGrafo();
 
 	// Pointer de grafo
-	grafo = criarGrafo();
+	grafo = criarGrafo(meios);
 	printf("----------------\n");
     printf("Vertices adjacentes a thesaurus.sharers.blizzards\n");
     listarAdjacentes(grafo, "thesaurus.sharers.blizzards");
@@ -34,7 +34,7 @@ int main()
 
 
 	// Menu principal
-	menuPrincipal(contas, meios);
+	menuPrincipal(contas, meios, grafo);
 
 	// Guardar contas e meios
 	printf("A guardar contas...\n");

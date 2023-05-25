@@ -6,7 +6,7 @@
 #include "../../meios/meio.h"
 
 // Verificar se o email e a password estão corretos e se o utilizador é um cliente ou gestor
-void handleLogin(Conta *contas, Meio *meios)
+void handleLogin(Conta *contas, Meio *meios, Grafo *grafo)
 {
   Conta *conta = NULL;
   char email[50], password[50];
@@ -32,7 +32,7 @@ void handleLogin(Conta *contas, Meio *meios)
   }
   else if (strcmp(conta->tipo, "gestor") == 0)
   {
-    menuGestorPrincipal(contas, meios);
+    menuGestorPrincipal(contas, meios, grafo);
   }
 }
 

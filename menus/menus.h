@@ -1,10 +1,12 @@
 #pragma once
 #include <stdio.h>
-#include "../contas/conta/conta.h"
-#include "../meios/meio.h"
+
+typedef struct grafos Grafo;
+typedef struct contas Conta;
+typedef struct meios Meio;
 
 void menuGestorContas(Conta *contas);
-void menuGestorMeios();
-void menuGestorPrincipal(Conta *conta, Meio *meios);
-void menuPrincipal(Conta *conta, Meio *meios);
+void menuGestorMeios(Meio *meios, Grafo *grafo);
+void menuGestorPrincipal(Conta *conta, Meio *meios, Grafo *grafo);
+void menuPrincipal(Conta *conta, Meio *meios, Grafo *grafo);
 void menuCliente(Conta *contas, Conta *conta, Meio *meios);

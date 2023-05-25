@@ -1,9 +1,11 @@
 #pragma once
 #include <stdio.h>
-#include "../conta/conta.h"
-#include "../../meios/meio.h"
 
-void handleLogin(Conta *contas, Meio *meios);
+typedef struct grafos Grafo;
+typedef struct contas Conta;
+typedef struct meios Meio;
+
+void handleLogin(Conta *contas, Meio *meios, Grafo *grafo);
 void handleRegisto(Conta *contas, int who);
 
 Conta *login(Conta *contas, char email[], char pass[]);

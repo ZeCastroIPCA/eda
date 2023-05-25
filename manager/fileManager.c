@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "fileManager.h"
 #include "../contas/conta/conta.h"
 #include "../meios/meio.h"
-#include "fileManager.h"
 
 // inserir conta no ficheiro
 Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)

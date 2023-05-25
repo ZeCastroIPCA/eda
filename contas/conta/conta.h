@@ -1,6 +1,7 @@
 #pragma once
 #include <stdio.h>
-#include "../../meios/meio.h"
+
+typedef struct meios Meio;
 
 typedef struct contas
 {
