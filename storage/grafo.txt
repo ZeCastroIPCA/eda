@@ -1,0 +1,8 @@
+///thesaurus.sharers.blizzards;///dimly.nuttier.pitch;150.000000;4
+///thesaurus.sharers.blizzards;///dimly.nuttier.pitch;150.000000;3
+///thesaurus.sharers.blizzards;///dimly.nuttier.pitch;150.000000;2
+///thesaurus.sharers.blizzards;///dimly.nuttier.pitch;150.000000;1
+///thesaurus.sharers.blizzards;///babbled.trifling.consoled;100.000000;4
+///thesaurus.sharers.blizzards;///babbled.trifling.consoled;100.000000;3
+///thesaurus.sharers.blizzards;///babbled.trifling.consoled;100.000000;2
+///thesaurus.sharers.blizzards;///babbled.trifling.consoled;100.000000;1

@@ -3,45 +3,87 @@
 #include <stdlib.h>
 #include "grafo.h"
 #include "../meios/meio.h"
+#include "../manager/fileManager.h"
 
-// guarda o grafo em ficheiros de texto e binário
-// void guardarGrafo(Grafo *grafo)
-// {
-//     FILE *fp, *fpb;
-//     fp = fopen("./storage/grafo.txt", "w+");
-//     fpb = fopen("./storage/grafo.bin", "wb+");
-//     if (fp != NULL && fpb != NULL)
-//     {
-//         Grafo *aux = grafo;
-//         if (aux != NULL)
-//         {
-//             while (aux != NULL)
-//             {
-//                 fprintf(fp, "%s;%s;%f;%d\n", aux->vertice, aux->adjacentes->vertice, aux->adjacentes->peso, aux->meios->codigo);
-//                 fprintf(fp, "%s;%s;%f;%d\n", aux->vertice, aux->adjacentes->vertice, aux->adjacentes->peso, aux->meios->codigo);
-//                 aux = aux->seguinte;
-//             }
-//         }
-//         fclose(fp);
-//         fclose(fpb);
-//         printf("Guardado no ficheiro com sucesso!\n");
-//     }
-//     else
-//     {
-//         if (fp == NULL)
-//         {
-//             printf("O ficheiro contas.txt não existe!\n");
-//         }
-//         else if (fpb == NULL)
-//         {
-//             printf("O ficheiro contas.bin não existe!\n");
-//         }
-//         else
-//         {
-//             printf("Houve um erro na pesquisa dos ficheiros!\n");
-//         }
-//     }
-// }
+// Ler grafo do ficheiro
+Grafo *lerGrafo()
+{
+    FILE *fp;
+    char vertice[50], adjacente[50];
+    float peso;
+    int id_meio;
+    Grafo *aux = NULL;
+    fp = fopen("./storage/grafo.txt", "r");
+    if (fp != NULL)
+    {
+        Grafo *novo = malloc(sizeof(fp));
+        if (novo != NULL)
+        {
+            printf("\nVértices disponíveis:\n");
+            while (!feof(fp))
+            {
+                printf("%s %s %.2f %d\n", aux->vertice, aux->adjacentes->vertice, aux->adjacentes->peso, aux->meios->codigo);
+                fscanf(fp, "%[^;];%[^;];%f;%d\n", vertice, adjacente, &peso, &id_meio);
+                aux = inserirGrafoFile(aux, vertice, adjacente, peso, id_meio);
+                novo = aux;
+            }
+            fclose(fp);
+            return (aux);
+        }
+    }
+    printf("\nFicheiro do grafo vazio!\n");
+    return (NULL);
+}
+
+// Guarda o grafo em ficheiros de texto e binário
+void guardarGrafo(Grafo *grafo)
+{
+    FILE *fp, *fpb;
+    fp = fopen("./storage/grafo.txt", "w+");
+    fpb = fopen("./storage/grafo.bin", "wb+");
+    if (fp != NULL && fpb != NULL)
+    {
+        Grafo *aux = grafo;
+        if (aux != NULL)
+        {
+            while (aux != NULL)
+            {
+                Adjacente *aux_adj = aux->adjacentes;
+                while (aux_adj != NULL)
+                {
+                    Meio *aux_meio = aux->meios;
+                    while (aux_meio != NULL)
+                    {
+                        printf("%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
+                        fprintf(fp, "%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
+                        fprintf(fpb, "%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
+                        aux_meio = aux_meio->seguinte;
+                    }
+                    aux_adj = aux_adj->seguinte;
+                }
+                aux = aux->seguinte;
+            }
+        }
+        fclose(fp);
+        fclose(fpb);
+        printf("Guardado no ficheiro com sucesso!\n");
+    }
+    else
+    {
+        if (fp == NULL)
+        {
+            printf("O ficheiro contas.txt não existe!\n");
+        }
+        else if (fpb == NULL)
+        {
+            printf("O ficheiro contas.bin não existe!\n");
+        }
+        else
+        {
+            printf("Houve um erro na pesquisa dos ficheiros!\n");
+        }
+    }
+}
 
 // Criar um novo grafo
 Grafo *criarGrafo(Meio *meios)
@@ -49,14 +91,14 @@ Grafo *criarGrafo(Meio *meios)
     Grafo *grafo = malloc(sizeof(Grafo));
     if (grafo != NULL)
     {
-        strcpy(grafo->vertice, "///thesaurus.sharers.blizzards");
+        strcpy(grafo->vertice, "///braga.braga.braga");
         grafo->meios = meios;
         grafo->seguinte = NULL;
 
-        criarVertice(&grafo, "///babbled.trifling.consoled");
-        criarVertice(&grafo, "///dimly.nuttier.pitch");
-        criarAresta(&grafo, "///thesaurus.sharers.blizzards", "///babbled.trifling.consoled", 100);
-        criarAresta(&grafo, "///thesaurus.sharers.blizzards", "///dimly.nuttier.pitch", 150);
+        criarVertice(&grafo, "///porto.porto.porto");
+        criarVertice(&grafo, "///lisboa.lisboa.lisboa");
+        criarAresta(&grafo, "///braga.braga.braga", "///porto.porto.porto", 100);
+        criarAresta(&grafo, "///braga.braga.braga", "///lisboa.lisboa.lisboa", 150);
 
         printf("\nGrafo criado com sucesso!\n");
         return grafo;
@@ -98,7 +140,6 @@ void criarVertice(Grafo **grafo, char novoVertice[])
     }
     printf("\nNão foi possível alocar memória para criação do vértice!\n");
 }
-
 
 // Listar os vértices
 void listarVertices(Grafo *grafo)
@@ -164,7 +205,7 @@ void listarAdjacentes(Grafo *grafo, char vertice[])
             *grafo = *grafo->seguinte;
             if (grafo == NULL)
             {
-                printf("Vertice não encontrado.\n");
+                printf("\nVertice não encontrado!\n");
                 return;
             }
         }
@@ -177,7 +218,7 @@ void listarAdjacentes(Grafo *grafo, char vertice[])
     }
     else
     {
-        printf("Grafo ou vertice não existente.\n");
+        printf("\nO Grafo ou o vertice não existe!\n");
     }
 }
 

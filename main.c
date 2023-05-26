@@ -45,7 +45,7 @@ int main()
 	printf("A guardar meios...\n");
 	guardarMeios(meios);
 	// printf("A guardar grafo...\n");
-	// guardarGrafo(grafo);
+	guardarGrafo(grafo);
 
 	// libertar a memória alocada
 	Conta *conta_aux = contas;

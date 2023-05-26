@@ -5,6 +5,7 @@
 #include "fileManager.h"
 #include "../contas/conta/conta.h"
 #include "../meios/meio.h"
+#include "../grafos/grafo.h"
 
 // inserir conta no ficheiro
 Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)
@@ -69,4 +70,26 @@ Meio *inserirMeioFile(Meio *meios, int cod, char tipo[], float bateria, float au
   }
 
   return (meios);
+}
+
+// inserir grafo no ficheiro
+Grafo *inserirGrafoFile(Grafo *grafo, char vertice[], char adjacente[], float peso, int codMeio)
+{
+  if (!existeVertice(grafo, vertice))
+  {
+    Grafo *novo = malloc(sizeof(struct grafos));
+    if (novo != NULL)
+    {
+      strcpy(novo->vertice, vertice);
+      strcpy(novo->adjacentes->vertice, adjacente);
+      novo->adjacentes->peso = peso;
+      novo->meios->codigo = codMeio;
+      novo->seguinte = grafo;
+      return (novo);
+    }
+    
+    return (grafo);
+  }
+
+  return (grafo);
 }
