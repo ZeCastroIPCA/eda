@@ -16,7 +16,7 @@ typedef struct meios
     struct meios *seguinte;
 } Meio;
 
-void inserirMeio(Meio *meios, Grafo *grafo); // Inserir meio de transporte e adicionar localização com geocódigo no grafo
+void inserirMeio(Meio **meios, Grafo **grafo); // Inserir meio de transporte e adicionar localização com geocódigo no grafo
 void listarMeios(Meio *meios); // listar na consola o conteúdo da lista ligada meios
 void listarMeiosParaCliente(Meio *meios); // listar todos os meios disponíveis para aluguer por ordem descrescente de autonomia
 void listarMeiosPorGeoCode(Grafo *grafo); // listar os meios numa determinada localização

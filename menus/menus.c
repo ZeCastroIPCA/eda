@@ -7,6 +7,7 @@
 #include "../contas/conta/conta.h"
 #include "../contas/auth/auth.h"
 #include "../meios/meio.h"
+#include "../grafos/grafo.h"
 
 void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 {
@@ -63,12 +64,12 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 		switch (op)
 		{
 		case 1:
-			inserirMeio(meios, grafo);
+			inserirMeio(&meios, &grafo);
 			break;
 		case 2:
 			listarMeios(meios);
 			break;
-		case 3:
+		case 3:			
 			listarMeiosPorGeoCode(grafo);
 			break;
 		case 4:

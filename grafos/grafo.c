@@ -56,7 +56,7 @@ Grafo *lerGrafo(Meio *meios)
             }
             else if (linha[0] == '-')
             {
-                // Linha tem separador "-----"
+                // Linha que tem separador "-----"
                 // Passar para a próxima linha
             }
             else
