@@ -19,10 +19,10 @@ int main()
 	// Ler contas, meios e grafo
 	contas = lerContas();
 	meios = lerMeios();
-	//grafo = lerGrafo();
+	grafo = lerGrafo(meios);
 
 	// Pointer de grafo
-	grafo = criarGrafo(meios);
+	//grafo = criarGrafo(meios);
 	
 	// Verifificar se o grafo foi criado com sucesso
 	printf("----------------------------------------------------------------\n");
@@ -39,7 +39,7 @@ int main()
 	guardarContas(contas);
 	printf("A guardar meios...\n");
 	guardarMeios(meios);
-	// printf("A guardar grafo...\n");
+	printf("A guardar grafo...\n");
 	guardarGrafo(grafo);
 
 	// libertar a memória alocada

@@ -73,132 +73,62 @@ void guardarMeios(Meio *meios)
 // Inserir meio de transporte e adicionar localização com geocódigo no grafo
 void inserirMeio(Meio *meios, Grafo *grafo)
 {
-  int cod = meios->codigo;
-  char tipo[50], geoCode[100];
-  float bateria, autonomia, custo;
+    int cod = meios->codigo;
+    char tipo[50], geoCode[100];
+    float bateria, autonomia, custo;
 
-  printf("\nTipo: ");
-  scanf("%49s", tipo);
-  printf("Bateria: ");
-  scanf("%f", &bateria);
-  printf("Autonomia: ");
-  scanf("%f", &autonomia);
-  printf("Custo: ");
-  scanf("%f", &custo);
-  printf("GeoCode: ");
-  scanf("%99s", geoCode);
-
-  // Verificar se existe uma localização com o geocódigo inserido
-  while (!existeVertice(grafo, geoCode))
-  {
-    printf("Não existe nenhuma localização com o geocódigo %s!\n", geoCode);
-    printf("Insira um geocódigo válido:");
+    printf("\nTipo: ");
+    scanf("%49s", tipo);
+    printf("Bateria: ");
+    scanf("%f", &bateria);
+    printf("Autonomia: ");
+    scanf("%f", &autonomia);
+    printf("Custo: ");
+    scanf("%f", &custo);
+    printf("GeoCode: ");
     scanf("%99s", geoCode);
-  }
 
-  while (1)
-  {
-    if (!existeMeio(meios, cod))
+    // Verificar se existe uma localização com o geocódigo inserido
+    while (!existeVertice(grafo, geoCode))
     {
-      Meio *aux = meios;
-      Meio *novo = malloc(sizeof(struct meios));
-      if (novo != NULL)
-      {
-        novo->codigo = cod;
-        strcpy(novo->tipo, tipo);
-        novo->bateria = bateria;
-        novo->autonomia = autonomia;
-        novo->id_cliente = 0;
-        novo->custo = custo;
-
-        // percorrer a lista ligada do meio até ao fim 
-        while (aux->seguinte != NULL)
-        {
-          aux = aux->seguinte;
-        }
-
-        // adicionar o novo meio no fim da lista ligada do meio
-        aux->seguinte = novo;
-
-        // percorrer a lista ligada do grafo até ao fim
-        while (grafo->meios->seguinte != NULL)
-        {
-          *grafo->meios = *grafo->meios->seguinte;
-        }
-
-        // adicionar o novo meio no fim da lista ligada do grafo
-        *grafo->meios = *novo;
-        printf("\nGrafo: %d\n", grafo->meios->codigo);
-        printf("\nMeios: %d\n", aux->codigo);
-        printf("\nMeio criado com sucesso!\n");
-        break;
-      }
-      else
-      {
-        printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
-      }
-      break;
+        printf("Não existe nenhuma localização com o geocódigo %s!\n", geoCode);
+        printf("Insira um geocódigo válido:");
+        scanf("%99s", geoCode);
     }
-    else
-      cod++;
-  }
+
+    while (1)
+    {
+        if (!existeMeio(meios, cod))
+        {
+            Meio *novo = malloc(sizeof(struct meios));
+            if (novo != NULL)
+            {
+                novo->codigo = cod;
+                strcpy(novo->tipo, tipo);
+                novo->bateria = bateria;
+                novo->autonomia = autonomia;
+                novo->id_cliente = 0;
+                novo->custo = custo;
+
+                // Adicionar o novo meio no início da lista ligada do grafo
+                novo->seguinte = grafo->meios;
+                grafo->meios = novo;
+
+                printf("\nMeio criado com sucesso!\n");
+                break;
+            }
+            else
+            {
+                printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
+            }
+            break;
+        }
+        else
+        {
+            cod++;
+        }
+    }
 }
-
-// Inserção de um novo meio
-// void inserirMeio(Meio *meios)
-// {
-//   int cod = meios->codigo;
-//   char tipo[50], geoCode[100];
-//   float bateria, autonomia, custo;
-
-//   printf("\nTipo: ");
-//   scanf("%49s", tipo);
-//   printf("Bateria: ");
-//   scanf("%f", &bateria);
-//   printf("Autonomia: ");
-//   scanf("%f", &autonomia);
-//   printf("Custo: ");
-//   scanf("%f", &custo);
-//   printf("GeoCode: ");
-//   scanf("%99s", geoCode);
-
-//   while (1)
-//   {
-//     if (!existeMeio(meios, cod))
-//     {
-//       Meio *aux = meios;
-//       Meio *novo = malloc(sizeof(struct meios));
-//       if (novo != NULL)
-//       {
-//         novo->codigo = cod;
-//         strcpy(novo->tipo, tipo);
-//         novo->bateria = bateria;
-//         novo->autonomia = autonomia;
-//         novo->id_cliente = 0;
-//         novo->custo = custo;
-//         strcpy(novo->geoCode, geoCode);
-
-//         // percorrer a lista ligada até ao fim
-//         while (aux->seguinte != NULL)
-//         {
-//           aux = aux->seguinte;
-//         }
-
-//         // adicionar o novo meio no fim da lista ligada
-//         aux->seguinte = novo;
-//         printf("\nMeio criado com sucesso!\n");
-//         break;
-//       }
-//       else
-//       {
-//         printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
-//       }
-//       break;
-//     }
-//     else
-//       cod++;
-//   }
-// }
 
 // Listagem de todos os meios numa tabela formatada
 void listarMeios(Meio *meios)

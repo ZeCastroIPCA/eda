@@ -17,7 +17,7 @@ typedef struct grafos
 {
 	char vertice[STRING_SIZE]; // geocódigo what3words
 	Adjacente *adjacentes;
-	Meio *meios; // Lista ligada com os códigos dos meios de transporte existentes neste geocódigo
+	Meio *meios; // Lista ligada dos meios de transporte existentes neste geocódigo
 	struct grafos *seguinte;
 } Grafo;
 
@@ -31,5 +31,5 @@ void adicionarMeio(Grafo **grafo, Meio *meios, char geocodigo[], int codigo); //
 
 int existeVertice(Grafo *grafo, char vertice[]); // Verificar se um vértice existe
 
-Grafo *lerGrafo(); // Ler o grafo de um ficheiro
+Grafo *lerGrafo(Meio *meios); // Ler o grafo de um ficheiro
 void guardarGrafo(Grafo *grafo); // Guardar o grafo num ficheiro

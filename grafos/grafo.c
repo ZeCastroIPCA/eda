@@ -6,33 +6,77 @@
 #include "../manager/fileManager.h"
 
 // Ler grafo do ficheiro
-Grafo *lerGrafo()
+Grafo *lerGrafo(Meio *meios)
 {
     FILE *fp;
-    char vertice[50], adjacente[50];
-    float peso;
-    int id_meio;
-    Grafo *aux = NULL;
+    char linha[100], vertice[100];
+
+    Grafo *grafo = NULL;
+
     fp = fopen("./storage/grafo.txt", "r");
     if (fp != NULL)
     {
-        Grafo *novo = malloc(sizeof(fp));
-        if (novo != NULL)
+        while (fgets(linha, sizeof(linha), fp) != NULL)
         {
-            printf("\nVértices disponíveis:\n");
-            while (!feof(fp))
+            // Remover o \n do fim da linha
+            linha[strcspn(linha, "\n")] = '\0';
+
+            printf("%s\n", linha);
+
+            if (linha[0] == '/')
             {
-                printf("%s %s %.2f %d\n", aux->vertice, aux->adjacentes->vertice, aux->adjacentes->peso, aux->meios->codigo);
-                fscanf(fp, "%[^;];%[^;];%f;%d\n", vertice, adjacente, &peso, &id_meio);
-                aux = inserirGrafoFile(aux, vertice, adjacente, peso, id_meio);
-                novo = aux;
+                // Linha é um vertice
+                strcpy(vertice,linha);
+                criarVertice(&grafo, linha);
             }
-            fclose(fp);
-            return (aux);
         }
+
+        // Reset do pointer para o inicio do ficheiro
+        fseek(fp, 0, SEEK_SET);
+        
+        while (fgets(linha, sizeof(linha), fp) != NULL)
+        {
+            // Remover o \n do fim da linha
+            linha[strcspn(linha, "\n")] = '\0';
+
+            printf("%s\n", linha);
+
+            if (linha[0] == '/')
+            {
+                // Linha é um vertice
+                strcpy(vertice,linha);
+            } 
+            else if (linha[0] == '_')
+            {
+                // Linha é uma aresta
+                char adjacente[100];
+                float peso;
+                sscanf(linha, "_%[^;];%f", adjacente, &peso);
+                criarAresta(&grafo, vertice, adjacente, peso);
+            }
+            else if (linha[0] == '-')
+            {
+                // Linha tem separador "-----"
+                // Passar para a próxima linha
+            }
+            else
+            {
+                // Linha é um meio de transporte
+                int id_meio;
+                char tipo[50];
+                float bateria, autonomia;
+                sscanf(linha, "%d;%[^;];%f;%f", &id_meio, tipo, &bateria, &autonomia);
+                adicionarMeio(&grafo, meios, vertice, id_meio);
+            }
+        }
+
+        fclose(fp);
+        printf("Grafo carregado do ficheiro com sucesso!\n");
+        return grafo;
     }
-    printf("\nFicheiro do grafo vazio!\n");
-    return (NULL);
+
+    printf("O ficheiro grafo.txt não pode ser aberto!\n");
+    return NULL;
 }
 
 // Guarda o grafo em ficheiros de texto e binário
@@ -44,39 +88,44 @@ void guardarGrafo(Grafo *grafo)
     if (fp != NULL && fpb != NULL)
     {
         Grafo *aux = grafo;
-        if (aux != NULL)
+        while (aux != NULL)
         {
-            while (aux != NULL)
+            fprintf(fp, "%s\n", aux->vertice);
+            fprintf(fpb, "%s\n", aux->vertice);
+
+            Adjacente *adj = aux->adjacentes;
+            while (adj != NULL)
             {
-                Adjacente *aux_adj = aux->adjacentes;
-                while (aux_adj != NULL)
-                {
-                    Meio *aux_meio = aux->meios;
-                    while (aux_meio != NULL)
-                    {
-                        printf("%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
-                        fprintf(fp, "%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
-                        fprintf(fpb, "%s;%s;%f;%d\n", aux->vertice, aux_adj->vertice, aux_adj->peso, aux_meio->codigo);
-                        aux_meio = aux_meio->seguinte;
-                    }
-                    aux_adj = aux_adj->seguinte;
-                }
-                aux = aux->seguinte;
+                fprintf(fp, "_%s;%.2f\n", adj->vertice, adj->peso);
+                fprintf(fpb, "_%s;%.2f\n", adj->vertice, adj->peso);
+                adj = adj->seguinte;
             }
+
+            Meio *meio = aux->meios;
+            while (meio != NULL)
+            {
+                fprintf(fp, "%d;%s;%.2f;%.2f\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia);
+                fprintf(fpb, "%d;%s;%.2f;%.2f\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia);
+                meio = meio->seguinte;
+            }
+
+            aux = aux->seguinte;
+            fprintf(fp, "-----\n");
+            fprintf(fpb, "-----\n");
         }
         fclose(fp);
         fclose(fpb);
-        printf("Guardado no ficheiro com sucesso!\n");
+        printf("Grafo guardado no ficheiro com sucesso!\n");
     }
     else
     {
         if (fp == NULL)
         {
-            printf("O ficheiro contas.txt não existe!\n");
+            printf("O ficheiro grafo.txt não pode ser aberto!\n");
         }
         else if (fpb == NULL)
         {
-            printf("O ficheiro contas.bin não existe!\n");
+            printf("O ficheiro grafo.bin não pode ser aberto!\n");
         }
         else
         {
@@ -92,18 +141,21 @@ Grafo *criarGrafo(Meio *meios)
     if (grafo != NULL)
     {
         strcpy(grafo->vertice, "///braga.braga.braga");
-        grafo->meios = meios;
+        grafo->meios = NULL;
         grafo->seguinte = NULL;
 
         criarVertice(&grafo, "///porto.porto.porto");
         criarVertice(&grafo, "///lisboa.lisboa.lisboa");
         criarAresta(&grafo, "///braga.braga.braga", "///porto.porto.porto", 100);
         criarAresta(&grafo, "///braga.braga.braga", "///lisboa.lisboa.lisboa", 150);
+        criarAresta(&grafo, "///porto.porto.porto", "///lisboa.lisboa.lisboa", 200);
+        criarAresta(&grafo, "///porto.porto.porto", "///braga.braga.braga", 100);
+        criarAresta(&grafo, "///lisboa.lisboa.lisboa", "///braga.braga.braga", 150);
+        criarAresta(&grafo, "///lisboa.lisboa.lisboa", "///porto.porto.porto", 200);
         adicionarMeio(&grafo, meios, "///braga.braga.braga", 1);
         adicionarMeio(&grafo, meios, "///porto.porto.porto", 2);
         adicionarMeio(&grafo, meios, "///porto.porto.porto", 3);
         adicionarMeio(&grafo, meios, "///lisboa.lisboa.lisboa", 4);
-        adicionarMeio(&grafo, meios, "///lisboa.lisboa.lisboa", 5);
 
         printf("\nGrafo criado com sucesso!\n");
     }
@@ -180,6 +232,7 @@ void criarAresta(Grafo **grafo, char origem[], char destino[], float peso)
         {
             grafoAtual = grafoAtual->seguinte;
         }
+
         Adjacente *novo = malloc(sizeof(struct adjacentes));
         if (novo != NULL)
         {
@@ -253,14 +306,14 @@ void listarMeiosGrafo(Grafo *grafo, Meio *meios, char geocodigo[])
     {
         printf("\n----  GEOCÓDIGO: %s  ----\n", geocodigo);
         printf("--------------------------------------------------\n");
-        printf("|  Código  |     Tipo     |  Bateria | Autonomia |\n");
+        printf("|  Código  |  Tipo        |  Bateria | Autonomia |\n");
         printf("--------------------------------------------------\n");
 
         Meio *aux = grafo->meios;
 
         if (aux == NULL)
         {
-            printf("|       Não existem meios de transporte!       |\n");
+            printf("|        Não existem meios de transporte!        |\n");
             printf("--------------------------------------------------\n");
         }
         else
@@ -296,7 +349,7 @@ void adicionarMeio(Grafo **grafo, Meio *meios, char geocodigo[], int codigo)
         }
         Meio *meioAtual = meios;
         meioAtual = existeMeio(meioAtual, codigo);
-        
+
         if (meioAtual != NULL)
         {
             // Adicionar o meio de transporte ao vértice
@@ -304,6 +357,12 @@ void adicionarMeio(Grafo **grafo, Meio *meios, char geocodigo[], int codigo)
             if (novo != NULL)
             {
                 novo->codigo = meioAtual->codigo;
+                strcpy(novo->tipo, meioAtual->tipo);
+                novo->autonomia = meioAtual->autonomia;
+                novo->bateria = meioAtual->bateria;
+                novo->custo = meioAtual->custo;
+                novo->id_cliente = meioAtual->id_cliente;
+                novo->inicio_aluguer = meioAtual->inicio_aluguer;
                 novo->seguinte = grafoAtual->meios;
                 grafoAtual->meios = novo;
                 printf("\nMeio de transporte %d adicionado com sucesso a %s!\n", codigo, geocodigo);
