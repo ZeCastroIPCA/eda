@@ -23,15 +23,15 @@ int main()
 
 	// Pointer de grafo
 	grafo = criarGrafo(meios);
+	
 	printf("----------------------------------------------------------------\n");
-	printf("Vertices existentes no grafo\n");
 	listarVertices(grafo);
 	printf("----------------------------------------------------------------\n");
-    printf("Vertices adjacentes a ///thesaurus.sharers.blizzards\n");
-    listarAdjacentes(grafo, "///thesaurus.sharers.blizzards");
+    printf("Vertices adjacentes a ///braga.braga.braga\n");
+    listarAdjacentes(grafo, "///braga.braga.braga");
 	printf("----------------------------------------------------------------\n");
-    printf("Meios de transporte existentes na localizacao ///babbled.trifling.consoled\n");
-    listarMeiosGrafo(grafo, "///dimly.nuttier.pitch");
+    printf("Meios de transporte existentes na localizacao ///porto.porto.porto\n");
+    listarMeiosGrafo(grafo, "///porto.porto.porto");
 	printf("----------------------------------------------------------------\n");
 
 
