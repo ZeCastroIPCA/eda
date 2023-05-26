@@ -86,9 +86,9 @@ void guardarGrafo(Grafo *grafo)
 }
 
 // Criar um novo grafo
-Grafo* criarGrafo(Meio* meios)
+Grafo *criarGrafo(Meio *meios)
 {
-    Grafo* grafo = malloc(sizeof(Grafo));
+    Grafo *grafo = malloc(sizeof(Grafo));
     if (grafo != NULL)
     {
         strcpy(grafo->vertice, "///braga.braga.braga");
@@ -101,7 +101,9 @@ Grafo* criarGrafo(Meio* meios)
         criarAresta(&grafo, "///braga.braga.braga", "///lisboa.lisboa.lisboa", 150);
         adicionarMeio(&grafo, meios, "///braga.braga.braga", 1);
         adicionarMeio(&grafo, meios, "///porto.porto.porto", 2);
-        adicionarMeio(&grafo, meios, "///lisboa.lisboa.lisboa", 3);
+        adicionarMeio(&grafo, meios, "///porto.porto.porto", 3);
+        adicionarMeio(&grafo, meios, "///lisboa.lisboa.lisboa", 4);
+        adicionarMeio(&grafo, meios, "///lisboa.lisboa.lisboa", 5);
 
         printf("\nGrafo criado com sucesso!\n");
     }
@@ -113,8 +115,6 @@ Grafo* criarGrafo(Meio* meios)
     return grafo;
 }
 
-
-
 // Criar um novo vértice
 void criarVertice(Grafo **grafo, char novoVertice[])
 {
@@ -123,8 +123,8 @@ void criarVertice(Grafo **grafo, char novoVertice[])
     {
         strcpy(novo->vertice, novoVertice);
         novo->meios = NULL;
-        novo->seguinte = *grafo;  // Set the next pointer to the current head
-        *grafo = novo;  // Update the head pointer to the new node
+        novo->seguinte = *grafo; // Set the next pointer to the current head
+        *grafo = novo;           // Update the head pointer to the new node
 
         printf("\nVértice criado com sucesso!\n");
     }
@@ -135,20 +135,18 @@ void criarVertice(Grafo **grafo, char novoVertice[])
 }
 
 // Listar os vértices
-void listarVertices(Grafo* grafo)
+void listarVertices(Grafo *grafo)
 {
     if (grafo != NULL)
     {
         printf("\n----  LISTA DE VÉRTICES  ----\n");
         printf("-----------------------------\n");
-        printf("|          Vértice          |\n");
-        printf("-----------------------------\n");
-        
+
         Grafo *aux = grafo;
-        
+
         while (aux != NULL)
         {
-            printf("| %25s |\n", aux->vertice);
+            printf("| %-25s |\n", aux->vertice);
             printf("-----------------------------\n");
             aux = aux->seguinte;
         }
@@ -158,7 +156,6 @@ void listarVertices(Grafo* grafo)
         printf("\nO grafo encontra-se vazio!\n");
     }
 }
-
 
 // Verificar se um vértice existe
 int existeVertice(Grafo *grafo, char vertice[])
@@ -206,33 +203,47 @@ void criarAresta(Grafo **grafo, char origem[], char destino[], float peso)
 // Listar os vértices adjacentes
 void listarAdjacentes(Grafo *grafo, char vertice[])
 {
-    Adjacente *adj;
     if (existeVertice(grafo, vertice))
     {
         while (strcmp(grafo->vertice, vertice) != 0)
         {
-            *grafo = *grafo->seguinte;
+            grafo = grafo->seguinte;
             if (grafo == NULL)
             {
                 printf("\nVertice não encontrado!\n");
                 return;
             }
         }
-        adj = grafo->adjacentes;
-        while (adj != NULL)
+
+        Adjacente *adj = grafo->adjacentes;
+
+        if (adj != NULL)
         {
-            printf("Adjacente:%s Peso:%.2f\n", adj->vertice, adj->peso);
-            adj = adj->seguinte;
+            printf("\n---  Adjacentes a %-s  ---\n", vertice);
+            printf("----------------------------------------\n");
+            printf("|          Adjacente          |  Peso  |\n");
+            printf("----------------------------------------\n");
+
+            while (adj != NULL)
+            {
+                printf("| %-27s | %6.2f |\n", adj->vertice, adj->peso);
+                printf("----------------------------------------\n");
+                adj = adj->seguinte;
+            }
+        }
+        else
+        {
+            printf("\nO vértice %s não possui adjacentes.\n", vertice);
         }
     }
     else
     {
-        printf("\nO Grafo ou o vertice não existe!\n");
+        printf("\nO Grafo ou o vértice não existe!\n");
     }
 }
 
 // Listar os códigos dos meios de transporte presente numa determinada localização passada por parâmetro
-void listarMeiosGrafo(Grafo *grafo, char geocodigo[])
+void listarMeiosGrafo(Grafo *grafo, Meio *meios, char geocodigo[])
 {
     while ((grafo != NULL) && (strcmp(grafo->vertice, geocodigo) != 0))
     {
@@ -240,47 +251,71 @@ void listarMeiosGrafo(Grafo *grafo, char geocodigo[])
     }
     if (grafo != NULL)
     {
+        printf("\n----  GEOCÓDIGO: %s  ----\n", geocodigo);
+        printf("--------------------------------------------------\n");
+        printf("|  Código  |     Tipo     |  Bateria | Autonomia |\n");
+        printf("--------------------------------------------------\n");
+
         Meio *aux = grafo->meios;
+
         if (aux == NULL)
-            printf("\nNão existem meios de transporte!\n");
+        {
+            printf("|       Não existem meios de transporte!       |\n");
+            printf("--------------------------------------------------\n");
+        }
         else
+        {
             while (aux != NULL)
             {
-                printf("Meio: %d\n", aux->codigo);
+                // Find the corresponding meio in the meios list
+                Meio *meio = existeMeio(meios, aux->codigo);
+                if (meio != NULL)
+                {
+                    printf("| %8d | %-12s |  %6.2f%% |  %6.2fKm |\n", aux->codigo, meio->tipo, meio->bateria, meio->autonomia);
+                    printf("--------------------------------------------------\n");
+                }
                 aux = aux->seguinte;
             }
+        }
     }
     else
+    {
         printf("\nO geocódigo %s não existe!\n", geocodigo);
+    }
 }
 
 // Adicionar um meio de transporte a uma determinada localização
-void adicionarMeio(Grafo** grafo, Meio* meios, char geocodigo[], int codigo)
+void adicionarMeio(Grafo **grafo, Meio *meios, char geocodigo[], int codigo)
 {
     if (existeVertice(*grafo, geocodigo))
     {
-        Grafo* grafoAtual = *grafo;
+        Grafo *grafoAtual = *grafo;
         while (strcmp(grafoAtual->vertice, geocodigo) != 0)
         {
             grafoAtual = grafoAtual->seguinte;
         }
-        Meio* meioAtual = meios;
-        while (meioAtual->codigo != codigo)
+        Meio *meioAtual = meios;
+        meioAtual = existeMeio(meioAtual, codigo);
+        
+        if (meioAtual != NULL)
         {
-            meioAtual = meioAtual->seguinte;
-        }
-        // Adicionar o meio de transporte ao vértice
-        Meio* novo = malloc(sizeof(struct meios));
-        if (novo != NULL)
-        {
-            novo->codigo = meioAtual->codigo;
-            novo->seguinte = grafoAtual->meios;
-            grafoAtual->meios = novo;
-            printf("\nMeio de transporte %d adicionado com sucesso a %s!\n", codigo, geocodigo);
+            // Adicionar o meio de transporte ao vértice
+            Meio *novo = malloc(sizeof(struct meios));
+            if (novo != NULL)
+            {
+                novo->codigo = meioAtual->codigo;
+                novo->seguinte = grafoAtual->meios;
+                grafoAtual->meios = novo;
+                printf("\nMeio de transporte %d adicionado com sucesso a %s!\n", codigo, geocodigo);
+            }
+            else
+            {
+                printf("\nNão foi possível alocar memória para o meio de transporte!\n");
+            }
         }
         else
         {
-            printf("\nNão foi possível alocar memória para o meio de transporte!\n");
+            printf("\nO meio de transporte %d não existe!\n", codigo);
         }
     }
     else

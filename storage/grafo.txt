@@ -1,0 +1,10 @@
+///braga.braga.braga;///lisboa.lisboa.lisboa;150.000000;1
+///braga.braga.braga;///lisboa.lisboa.lisboa;150.000000;1
+///braga.braga.braga;///lisboa.lisboa.lisboa;150.000000;2
+///braga.braga.braga;///lisboa.lisboa.lisboa;150.000000;3
+///braga.braga.braga;///lisboa.lisboa.lisboa;150.000000;4
+///braga.braga.braga;///porto.porto.porto;100.000000;1
+///braga.braga.braga;///porto.porto.porto;100.000000;1
+///braga.braga.braga;///porto.porto.porto;100.000000;2
+///braga.braga.braga;///porto.porto.porto;100.000000;3
+///braga.braga.braga;///porto.porto.porto;100.000000;4

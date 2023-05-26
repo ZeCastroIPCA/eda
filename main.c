@@ -24,17 +24,12 @@ int main()
 	// Pointer de grafo
 	grafo = criarGrafo(meios);
 	
+	// Verifificar se o grafo foi criado com sucesso
 	printf("----------------------------------------------------------------\n");
 	listarVertices(grafo);
-	printf("----------------------------------------------------------------\n");
-    printf("Vertices adjacentes a ///braga.braga.braga\n");
     listarAdjacentes(grafo, "///braga.braga.braga");
+    listarMeiosGrafo(grafo, meios, "///porto.porto.porto");
 	printf("----------------------------------------------------------------\n");
-    printf("Meios de transporte existentes na localizacao ///porto.porto.porto\n");
-    listarMeiosGrafo(grafo, "///porto.porto.porto");
-	printf("----------------------------------------------------------------\n");
-
-
 
 	// Menu principal
 	menuPrincipal(contas, meios, grafo);
