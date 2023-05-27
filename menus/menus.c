@@ -132,6 +132,50 @@ void menuGestorContas(Conta *contas, Grafo *grafo)
 	} while (op != 0);
 }
 
+void menuGestorGrafo(Grafo *grafo, Meio *meios)
+{
+	int op;
+	do
+	{
+		printf("\n------------------------------\n");
+		printf("|       Gestão do Grafo      |\n");
+		printf("------------------------------\n");
+		printf("1 - Criar um vértice\n");
+		printf("2 - Criar um vertice adjacente\n");
+		printf("3 - Listar todos os geocódigos\n");
+		printf("4 - Listar adjacentes de um vértice\n");
+		printf("5 - Listar meios por geocódigo\n");
+		printf("6 - Adicionar um meio elétrico a um geo código\n");
+		printf("0 - Voltar\n");
+		printf("Opcao:");
+		scanf("%d", &op);
+		switch (op)
+		{
+		case 1:
+			criarVertice(&grafo);
+			break;
+		case 2:
+			criarAresta(&grafo);
+			break;
+		case 3:			
+			listarVertices(grafo);
+			break;
+		case 4:
+			listarAdjacentes(grafo);
+			break;
+		case 5:
+			listarMeiosPorGeoCode(grafo);
+			break;
+		case 6:
+			adicionarMeio(&grafo, meios);
+			break;
+		default:
+			op != 0 && printf("\nOpção inválida!\n");
+			break;
+		}
+	} while (op != 0);
+}
+
 void menuGestorPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 {
 	int op;
@@ -142,6 +186,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 		printf("------------------------------\n");
 		printf("1 - Gestão de Meios Elétricos\n");
 		printf("2 - Gestão de Contas\n");
+		printf("3 - Gestão do Grafo\n");
 		printf("0 - Voltar\n");
 		printf("Opcao:");
 		scanf("%d", &op);
@@ -152,6 +197,9 @@ void menuGestorPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 			break;
 		case 2:
 			menuGestorContas(contas, grafo);
+			break;
+		case 3:
+			menuGestorGrafo(grafo, meios);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
