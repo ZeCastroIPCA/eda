@@ -20,6 +20,19 @@
         "iterator": "c",
         "grafo.h": "c",
         "__tuple": "c",
-        "array": "c"
+        "array": "c",
+        "__functional_base": "c",
+        "__functional_base_03": "c",
+        "__hash_table": "c",
+        "algorithm": "c",
+        "chrono": "c",
+        "cstddef": "c",
+        "type_traits": "c",
+        "functional": "c",
+        "limits": "c",
+        "memory": "c",
+        "ratio": "c",
+        "tuple": "c",
+        "utility": "c"
     }
 }

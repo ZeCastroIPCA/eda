@@ -25,11 +25,11 @@ int main()
 	//grafo = criarGrafo(meios);
 	
 	// Verifificar se o grafo foi criado com sucesso
-	printf("----------------------------------------------------------------\n");
-	listarVertices(grafo);
-    listarAdjacentesMan(grafo, "///braga.braga.braga");
-    listarMeiosGrafoMan(grafo, meios, "///porto.porto.porto");
-	printf("----------------------------------------------------------------\n");
+	// printf("----------------------------------------------------------------\n");
+	// listarVertices(grafo);
+    // listarAdjacentesMan(grafo, "///braga.braga.braga");
+    // listarMeiosGrafoMan(grafo, meios, "///porto.porto.porto");
+	// printf("----------------------------------------------------------------\n");
 
 	// Menu principal
 	menuPrincipal(contas, meios, grafo);

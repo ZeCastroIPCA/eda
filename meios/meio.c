@@ -46,7 +46,7 @@ void guardarMeios(Meio *meios)
     Meio *aux = meios;
     while (aux != NULL)
     {
-      //printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
+      // printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       aux = aux->seguinte;
@@ -75,6 +75,7 @@ void guardarMeios(Meio *meios)
 // Inserir meio de transporte e adicionar localização com geocódigo no grafo
 void inserirMeio(Meio **meios, Grafo **grafo)
 {
+  // TODO - Corrigir bug de quando grava novo meio, não grava no ficheiro, no grafo.txt apaga todos do mesmo geocodigo e no meios.txt não chega a gravar
   int cod = (*meios)->codigo + 1;
   char tipo[50], geoCode[100];
   float bateria, autonomia, custo;
@@ -279,29 +280,109 @@ int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char
   printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   | Distância |\n");
   printf("-----------------------------------------------------------------------------------\n");
 
-  // TODO - Perceber como fazer o menor trajeto
+  // TODO - Encontrar vértices a uma distância menor que o raio em relação ao vértice da conta
   Grafo *grafoAux = grafo;
-  while (grafoAux != NULL)
+  while (grafoAux != NULL && strcmp(grafoAux->vertice, conta->localizacao) != 0)
   {
-    while (grafoAux->adjacentes != NULL)
-    {
-      if (grafoAux->adjacentes->peso <= raio)
-      {
-        while (grafoAux->meios != NULL)
-        {
-          if (strcmp(grafoAux->meios->tipo, tipo) == 0)
-          {
-            printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s | %7.0f m |\n", grafoAux->meios->codigo, grafoAux->meios->tipo, grafoAux->meios->bateria, grafoAux->meios->autonomia, grafoAux->vertice, grafoAux->adjacentes->peso);
-            count++;
-          }
-          grafoAux->meios = grafoAux->meios->seguinte;
-        }
-      }
-      grafoAux->adjacentes = grafoAux->adjacentes->seguinte;
-    }
     grafoAux = grafoAux->seguinte;
   }
-  if (grafoAux == NULL && count == 0)
+
+  if (grafoAux == NULL)
+  {
+    printf("O vértice %s não existe.\n", conta->localizacao);
+    return count;
+  }
+
+  // Passar pelos meios do vértice da "conta"
+  Meio *meio = grafoAux->meios;
+  while (meio != NULL)
+  {
+    // Verificar se o meio é do tipo pretendido
+    Meio *atualMeio = existeMeio(meios, meio->codigo);
+    if (strcmp(atualMeio->tipo, tipo) == 0)
+    {
+      count++;
+      printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   0 m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, conta->localizacao);
+      printf("-----------------------------------------------------------------------------------\n");
+    }
+    meio = meio->seguinte;
+  }
+
+  // Passar pelos vértices adjacentes ao vértice da "conta"
+  Adjacente *adjacenteAux = grafoAux->adjacentes;
+  while (adjacenteAux != NULL)
+  {
+    // Calcular a distância entre o vértice da "conta" e o vértice adjacente
+    float distancia = adjacenteAux->peso;
+    // Verificar se a distância é menor que o raio
+    if (distancia <= raio)
+    {
+      // Encontrar o vértice adjacente na lista de vértices
+      Grafo *adj = grafo;
+      while (adj != NULL && strcmp(adj->vertice, adjacenteAux->vertice) != 0)
+      {
+        adj = adj->seguinte;
+      }
+
+      if (adj != NULL)
+      {
+        // Passar pelos meios associados ao vértice adj
+        Meio *meio = adj->meios;
+        while (meio != NULL)
+        {
+          // Verificar se o meio corresponde ao tipo desejado
+          Meio *atualMeio = existeMeio(meios, meio->codigo); 
+          if (strcmp(atualMeio->tipo, tipo) == 0)
+          {
+            count++;
+            printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   %-3.0f m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, adj->vertice, distancia);
+            printf("-----------------------------------------------------------------------------------\n");
+          }
+          meio = meio->seguinte;
+        }
+      }
+
+      // Passar pelos adjacentes do vértice adj
+      Adjacente *adjAdj = adj->adjacentes;
+      while (adjAdj != NULL)
+      {
+        // Calcular a distância
+        float totalDistance = distancia + adjAdj->peso;
+
+        // Verificar se a distância está dentro do raio
+        if (totalDistance <= raio)
+        {
+          // Encontrar o vértice adjAdjVertice correspondente no grafo
+          Grafo *adjAdjVertice = grafo;
+          while (adjAdjVertice != NULL && strcmp(adjAdjVertice->vertice, adjAdj->vertice) != 0)
+          {
+            adjAdjVertice = adjAdjVertice->seguinte;
+          }
+
+          if (adjAdjVertice != NULL)
+          {
+            // Passar pelos meios associados ao vértice adjAdjVertice
+            Meio *meio = adjAdjVertice->meios;
+            while (meio != NULL)
+            {
+              // Verificar se o meio corresponde ao tipo desejado
+              Meio *atualMeio = existeMeio(meios, meio->codigo); 
+              if (strcmp(atualMeio->tipo, tipo) == 0)
+              {
+                count++;
+                printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   %-3.0f m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, adjAdjVertice->vertice, distancia);
+                printf("-----------------------------------------------------------------------------------\n");
+              }
+              meio = meio->seguinte;
+            }
+          }
+        }
+        adjAdj = adjAdj->seguinte;
+      }
+    }
+    adjacenteAux = adjacenteAux->seguinte;
+  }
+  if (count == 0)
   {
     printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, conta->localizacao);
   }
@@ -408,6 +489,8 @@ Meio *existeMeio(Meio *meios, int cod)
 // Recolher todos os meios
 void recolherMeios(Meio *meios, Grafo *grafo)
 {
+
+  // TODO - Recolher todos os meios de todos os vértices do grafo
   // Array de strings trajeto
   char trajeto[100][100];
   // Array de inteiros para guardar o peso de cada meio

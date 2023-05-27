@@ -5,7 +5,6 @@
 
 typedef struct meios Meio;
 
-// Representação de um grafo orientado e pesado
 typedef struct adjacentes
 {
 	char vertice[STRING_SIZE]; // geocódigo what3words
