@@ -58,6 +58,7 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 		printf("3 - Listar meios num Geo Código\n");
 		printf("4 - Alterar dados de um meio elétrico\n");
 		printf("5 - Eliminar um meio elétrico\n");
+		printf("6 - Recolher todos os meios elétricos\n");
 		printf("0 - Voltar\n");
 		printf("Opcao:");
 		scanf("%d", &op);
@@ -77,6 +78,9 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 			break;
 		case 5:
 			removerMeio(meios);
+			break;
+		case 6:
+			recolherMeios(meios, grafo);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");

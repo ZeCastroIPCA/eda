@@ -22,7 +22,6 @@ typedef struct contas
 void listarContas(Conta *contas, char tipo[]); // listar na consola o conteúdo da lista ligada contas
 void alterarConta(Conta *contas, Grafo *grafo); // Alterar uma conta a partir do seu código
 void removerConta(Conta *contas, int cod, int who); // Remover uma conta a partir do seu código
-void listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio); // listar os meios a um certo raio do cliente
 void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo); // Alugar um meio de mobilidade elétrica
 void carregarSaldo(Conta *conta); // Carregar saldo na conta
 

@@ -18,6 +18,8 @@
         "stdlib.h": "c",
         "system_error": "c",
         "iterator": "c",
-        "grafo.h": "c"
+        "grafo.h": "c",
+        "__tuple": "c",
+        "array": "c"
     }
 }

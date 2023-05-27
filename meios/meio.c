@@ -4,6 +4,7 @@
 #include "meio.h"
 #include "../manager/fileManager.h"
 #include "../grafos/grafo.h"
+#include "../contas/conta/conta.h"
 
 // Ler meios do ficheiro
 Meio *lerMeios()
@@ -175,7 +176,7 @@ void listarMeios(Meio *meios)
 }
 
 // Listagem de todos os meios por ordem decrescente de autonomia
-void listarMeiosParaCliente(Meio *meios)
+int listarMeiosParaCliente(Meio *meios)
 {
   // Contar o número de meios
   int count = 0;
@@ -228,6 +229,7 @@ void listarMeiosParaCliente(Meio *meios)
 
   // Libertar a memória alocada para o array
   free(meios_array);
+  return count;
 }
 
 // Listagem de meios por geocode
@@ -265,6 +267,46 @@ void listarMeiosPorGeoCode(Grafo *grafo)
     printf("|     Não existem meios no Geo Código %-20s     |\n", geo);
   }
   printf("-----------------------------------------------------------------------\n");
+}
+
+// Listagem de meios por raio
+int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char tipo[50])
+{
+  int count = 0;
+
+  printf("\n---  LISTA DE %s ATÉ %.0fm DE %s  ---\n", tipo, raio, conta->localizacao);
+  printf("-----------------------------------------------------------------------------------\n");
+  printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   | Distância |\n");
+  printf("-----------------------------------------------------------------------------------\n");
+
+  // TODO - Perceber como fazer o menor trajeto
+  Grafo *grafoAux = grafo;
+  while (grafoAux != NULL)
+  {
+    while (grafoAux->adjacentes != NULL)
+    {
+      if (grafoAux->adjacentes->peso <= raio)
+      {
+        while (grafoAux->meios != NULL)
+        {
+          if (strcmp(grafoAux->meios->tipo, tipo) == 0)
+          {
+            printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s | %7.0f m |\n", grafoAux->meios->codigo, grafoAux->meios->tipo, grafoAux->meios->bateria, grafoAux->meios->autonomia, grafoAux->vertice, grafoAux->adjacentes->peso);
+            count++;
+          }
+          grafoAux->meios = grafoAux->meios->seguinte;
+        }
+      }
+      grafoAux->adjacentes = grafoAux->adjacentes->seguinte;
+    }
+    grafoAux = grafoAux->seguinte;
+  }
+  if (grafoAux == NULL && count == 0)
+  {
+    printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, conta->localizacao);
+  }
+  printf("-----------------------------------------------------------------------------------\n");
+  return count;
 }
 
 // Alterar um meio a partir do seu código
@@ -361,4 +403,83 @@ Meio *existeMeio(Meio *meios, int cod)
     meios = meios->seguinte;
   }
   return (0);
+}
+
+// Recolher todos os meios
+void recolherMeios(Meio *meios, Grafo *grafo)
+{
+  // Array de strings trajeto
+  char trajeto[100][100];
+  // Array de inteiros para guardar o peso de cada meio
+  int pesos[100];
+  // Array de inteiros para guardar a distância entre cada vértice
+  int distancias[100];
+
+  // Peso dos tipos de meios
+  int trotineta = 10, bicicleta = 20, carro = 200, barco = 500, aviao = 1000;
+  // Tamanho dos arrays
+  int trajetoLength = sizeof(trajeto) / sizeof(trajeto[0]);
+  int pesosLength = sizeof(pesos) / sizeof(pesos[0]);
+  int distanciasLength = sizeof(distancias) / sizeof(distancias[0]);
+
+  Meio *meiosAux = meios;
+  Grafo *grafoAux = grafo;
+  while (grafoAux != NULL)
+  {
+    while (grafoAux->meios != NULL)
+    {
+      // Comparar o codigo do meio com o codigo do grafo
+      if (meiosAux->codigo == grafoAux->meios->codigo)
+      {
+        // Verificar se está alugado ou não
+        if (meiosAux->id_cliente == 0)
+        {
+          // Verificar a bateria
+          if (meiosAux->bateria < 50)
+          {
+            // Adicionar vertice ao array de trajeto
+            strcpy(trajeto[trajetoLength], grafoAux->vertice);
+            // Adicionar peso ao array de pesos
+            if (strcmp(meiosAux->tipo, "trotineta") == 0)
+            {
+              pesos[trajetoLength] = trotineta;
+            }
+            else if (strcmp(meiosAux->tipo, "bicicleta") == 0)
+            {
+              pesos[trajetoLength] = bicicleta;
+            }
+            else if (strcmp(meiosAux->tipo, "carro") == 0)
+            {
+              pesos[trajetoLength] = carro;
+            }
+            else if (strcmp(meiosAux->tipo, "barco") == 0)
+            {
+              pesos[trajetoLength] = barco;
+            }
+            else if (strcmp(meiosAux->tipo, "aviao") == 0)
+            {
+              pesos[trajetoLength] = aviao;
+            }
+            // Adicionar distância ao array de distâncias através da adjacência do vértice
+            distancias[trajetoLength] = grafoAux->adjacentes->peso;
+          }
+        }
+      }
+      grafoAux->meios = grafoAux->meios->seguinte;
+    }
+    grafoAux = grafoAux->seguinte;
+  }
+
+  // Imprimir o trajeto
+  int distanciaTotal = 0, pesoTotal = 0;
+  printf("\nTrajeto a percorrer:\n");
+  for (size_t i = 0; i < trajetoLength; i++)
+  {
+    printf("%s\n", trajeto[i]);
+    distanciaTotal += distancias[i];
+    pesoTotal += pesos[i];
+  }
+  printf("\nDistância total: %d\n", distanciaTotal);
+  printf("Peso total: %d\n", pesoTotal);
+  printf("\nMeios recolhido com sucesso!\n");
 }

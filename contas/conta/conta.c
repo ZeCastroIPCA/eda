@@ -240,7 +240,7 @@ void removerConta(Conta *contas, int cod, int who)
 
 void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo)
 {
-  int conta_op, aluguer_op, pesquisa_op, meio_cod;
+  int conta_op, aluguer_op, pesquisa_op, meio_cod, meiosNum = 0;
 
   // variável auxiliar da conta do cliente
   Conta *conta_aux = conta;
@@ -296,16 +296,27 @@ void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo)
   if (pesquisa_op == 1)
   {
     int raio;
+    char tipo[50];
     printf("Qual o raio da pesquisa?\nRaio:");
     scanf("%d", &raio);
-    listarMeiosPorRaio(conta, grafo, meios, raio);
+    printf("Qual o tipo de meio que pretende alugar?\nTipo:");
+    scanf("%s", tipo);
+    meiosNum = listarMeiosPorRaio(conta, grafo, meios, raio, tipo);
   }
   else
   {
-    listarMeiosParaCliente(meios);
+    meiosNum = listarMeiosParaCliente(meios);
   }
-  printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
-  scanf("%d", &meio_cod);
+  if (meiosNum == 0)
+  {
+    printf("\nNão existem meios disponíveis para alugar!\n\n");
+    return;
+  }
+  if (meiosNum > 0)
+  {
+    printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
+    scanf("%d", &meio_cod);
+  }
   if (conta_aux->saldo < 0.5)
   {
     printf("\nNão tem saldo suficiente para alugar um meio!\n");
@@ -323,41 +334,6 @@ void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo)
   }
   printf("\nO meio que pretende alugar não existe!\n");
   return;
-}
-
-// Listagem de meios por raio
-void listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio)
-{
-  int count = 0;
-
-  printf("\n---  LISTA DE MEIOS ATÉ %.0fm DE %s  ---\n", raio, conta->localizacao);
-  printf("-----------------------------------------------------------------------------------\n");
-  printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   | Distância |\n");
-  printf("-----------------------------------------------------------------------------------\n");
-
-  Grafo *grafoAux = grafo;
-  while (grafoAux != NULL)
-  {
-    while (grafoAux->adjacentes != NULL)
-    {
-      if (grafoAux->adjacentes->peso <= raio)
-      {
-        while (grafoAux->meios != NULL)
-        {
-          printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s | %7.0f m |\n", grafoAux->meios->codigo, grafoAux->meios->tipo, grafoAux->meios->bateria, grafoAux->meios->autonomia, grafoAux->vertice, grafoAux->adjacentes->peso);
-          count++;
-          grafoAux->meios = grafoAux->meios->seguinte;
-        }
-      }
-      grafoAux->adjacentes = grafoAux->adjacentes->seguinte;
-    }
-    grafoAux = grafoAux->seguinte;
-  }
-  if (grafoAux == NULL && count == 0)
-  {
-    printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, conta->localizacao);
-  }
-  printf("-----------------------------------------------------------------------------------\n");
 }
 
 // Carregar saldo na conta
