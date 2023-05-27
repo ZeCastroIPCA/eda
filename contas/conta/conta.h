@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 typedef struct meios Meio;
+typedef struct grafos Grafo;
 
 typedef struct contas
 {
@@ -14,13 +15,15 @@ typedef struct contas
     char nif[9]; // nif do cliente
     float saldo; // saldo da conta do cliente
     int meio_id; // id do meio de mobilidade elétrica alugado pelo cliente
+    char localizacao[100]; // localização do cliente
     struct contas *seguinte;
 } Conta;
 
 void listarContas(Conta *contas, char tipo[]); // listar na consola o conteúdo da lista ligada contas
-void alterarConta(Conta *contas); // Alterar uma conta a partir do seu código
+void alterarConta(Conta *contas, Grafo *grafo); // Alterar uma conta a partir do seu código
 void removerConta(Conta *contas, int cod, int who); // Remover uma conta a partir do seu código
-void alugarMeio(Conta *contas, Conta *conta, Meio *meios); // Alugar um meio de mobilidade elétrica
+void listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio); // listar os meios a um certo raio do cliente
+void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo); // Alugar um meio de mobilidade elétrica
 void carregarSaldo(Conta *conta); // Carregar saldo na conta
 
 Conta *existeConta(Conta *contas, int cod); // Determinar existência do 'codigo' na lista ligada 'contas'

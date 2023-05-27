@@ -45,6 +45,7 @@ void guardarMeios(Meio *meios)
     Meio *aux = meios;
     while (aux != NULL)
     {
+      printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       aux = aux->seguinte;
@@ -111,20 +112,23 @@ void inserirMeio(Meio **meios, Grafo **grafo)
     novo->id_cliente = 0;
     novo->custo = custo;
 
+    Grafo *grafoAux = *grafo;
+
     // Procurar o vértice com o geocódigo inserido
-    while (strcmp((*grafo)->vertice, geoCode) != 0)
+    while (strcmp(grafoAux->vertice, geoCode) != 0)
     {
-      (*grafo) = (*grafo)->seguinte;
+      grafoAux = grafoAux->seguinte;
     }
 
     // Adicionar o novo meio no início da lista ligada do grafo
-    novo->seguinte = (*grafo)->meios;
-    (*grafo)->meios = novo;
+    novo->seguinte = grafoAux->meios;
+    grafoAux->meios = novo;
 
     Meio *novo_meio = malloc(sizeof(struct meios));
     if (novo_meio != NULL)
     {
       *novo_meio = *novo;
+      // Adicionar o novo meio no início da lista ligada dos meios
       novo_meio->seguinte = *meios;
       *meios = novo_meio;
     }
@@ -134,18 +138,16 @@ void inserirMeio(Meio **meios, Grafo **grafo)
     }
 
     // TESTING - Listar todos os meios no vértice
-    // Meio *meiosAux = (*grafo)->meios;
+    // Meio *meiosAux = grafoAux->meios;
     // while (meiosAux != NULL)
     // {
-    //   printf("Meio: %s\n", meiosAux->tipo);
     //   meiosAux = meiosAux->seguinte;
     // }
 
-    // TESTING - Listar todos os meios na lista ligada dos meios
+    // // TESTING - Listar todos os meios na lista ligada dos meios
     // Meio *meiosMain = *meios;
     // while (meiosMain != NULL)
     // {
-    //   printf("Meio Meio: %s\n", meiosMain->tipo);
     //   meiosMain = meiosMain->seguinte;
     // }
 

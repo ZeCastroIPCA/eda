@@ -9,7 +9,7 @@
 #include "../meios/meio.h"
 #include "../grafos/grafo.h"
 
-void menuCliente(Conta *contas, Conta *conta, Meio *meios)
+void menuCliente(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo)
 {
 	int op;
 
@@ -27,7 +27,7 @@ void menuCliente(Conta *contas, Conta *conta, Meio *meios)
 		switch (op)
 		{
 		case 1:
-			alugarMeio(contas, conta, meios);
+			alugarMeio(contas, conta, meios, grafo);
 			break;
 		case 2:
 			carregarSaldo(conta);
@@ -85,7 +85,7 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 	} while (op != 0);
 }
 
-void menuGestorContas(Conta *contas)
+void menuGestorContas(Conta *contas, Grafo *grafo)
 {
 	int op;
 	do
@@ -105,7 +105,7 @@ void menuGestorContas(Conta *contas)
 		{
 		case 1:
 			// O parametro 1 indica que é um registo de um gestor
-			handleRegisto(contas, 1);
+			handleRegisto(contas, 1, grafo);
 			break;
 		case 2:
 			listarContas(contas, "cliente");
@@ -114,7 +114,7 @@ void menuGestorContas(Conta *contas)
 			listarContas(contas, "gestor");
 			break;
 		case 4:
-			alterarConta(contas);
+			alterarConta(contas, grafo);
 			break;
 		case 5:
 			// O valor do segundo parametro a 0 é meramente ilustrativo, pois o valor é pedido ao utilizador dentro da função
@@ -147,7 +147,7 @@ void menuGestorPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 			menuGestorMeios(meios, grafo);
 			break;
 		case 2:
-			menuGestorContas(contas);
+			menuGestorContas(contas, grafo);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");
@@ -176,7 +176,7 @@ void menuPrincipal(Conta *contas, Meio *meios, Grafo *grafo)
 			break;
 		case 2:
 			// O parametro 0 indica que é um registo de cliente
-			handleRegisto(contas, 0);
+			handleRegisto(contas, 0, grafo);
 			break;
 		default:
 			op != 0 && printf("\nOpção inválida!\n");

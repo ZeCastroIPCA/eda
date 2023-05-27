@@ -57,6 +57,13 @@ int main()
 		meio_aux = meio_aux->seguinte;
 		free(meio_aux2);
 	}
+	Grafo *grafo_aux = grafo;
+	while (grafo_aux != NULL)
+	{
+		Grafo *grafo_aux2 = grafo_aux;
+		grafo_aux = grafo_aux->seguinte;
+		free(grafo_aux2);
+	}
 	printf("Memória libertada com sucesso!\n");
 
 	return (0);

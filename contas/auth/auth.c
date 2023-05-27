@@ -4,6 +4,7 @@
 #include "../../menus/menus.h"
 #include "../conta/conta.h"
 #include "../../meios/meio.h"
+#include "../../grafos/grafo.h"
 
 // Verificar se o email e a password estão corretos e se o utilizador é um cliente ou gestor
 void handleLogin(Conta *contas, Meio *meios, Grafo *grafo)
@@ -28,7 +29,7 @@ void handleLogin(Conta *contas, Meio *meios, Grafo *grafo)
 
   if (strcmp(conta->tipo, "cliente") == 0)
   {
-    menuCliente(contas, conta, meios);
+    menuCliente(contas, conta, meios, grafo);
   }
   else if (strcmp(conta->tipo, "gestor") == 0)
   {
@@ -37,9 +38,9 @@ void handleLogin(Conta *contas, Meio *meios, Grafo *grafo)
 }
 
 // Criar uma nova conta
-void handleRegisto(Conta *contas, int who)
+void handleRegisto(Conta *contas, int who, Grafo *grafo)
 {
-  char email[50], password[50], nome[50], morada[50], nif[9], tipo[50];
+  char email[50], password[50], nome[50], morada[50], nif[9], tipo[50], localizacao[100];
   int tipoInt = 456; // 456 é um valor aleatório e inválido para o tipo de conta
   if (who == 1)
   {
@@ -61,21 +62,30 @@ void handleRegisto(Conta *contas, int who)
   if (tipoInt == 456)
   {
     printf("Nome: ");
-    scanf("%49[^\n]s", nome);
-    getchar();
+    scanf("%49s", nome);
     printf("Morada: ");
-    scanf("%49[^\n]s", morada);
+    scanf("%49s", morada);
     printf("NIF: ");
-    scanf("%s", nif);
+    scanf("%8s", nif);
+    printf("Localização: ");
+    scanf("%99s", localizacao);
+    // Verificar se existe uma localização com o geocódigo inserido
+    while (!existeVertice(grafo, localizacao))
+    {
+      printf("Não existe nenhuma localização com o geocódigo %s!\n", localizacao);
+      printf("Insira um geocódigo válido:");
+      scanf("%99s", localizacao);
+    }
   }
   else
   {
     strcpy(nome, "n/a");
     strcpy(morada, "n/a");
     strcpy(nif, "n/a");
+    strcpy(localizacao, "n/a");
   }
 
-  registo(contas, email, password, nome, morada, nif, tipo);
+  registo(contas, email, password, nome, morada, nif, tipo, localizacao);
 }
 
 // Verificar se o email e a password estão corretos
@@ -91,7 +101,7 @@ Conta *login(Conta *contas, char email[], char pass[])
 }
 
 // Criar uma nova conta
-void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[], char tipo[])
+void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[], char tipo[], char localizacao[])
 {
   int cod = contas->codigo;
   const int emailExiste = verificarEmail(contas, email);
@@ -117,6 +127,7 @@ void registo(Conta *contas, char email[], char pass[], char nome[], char morada[
         strcpy(novo->nome, nome);
         strcpy(novo->morada, morada);
         strcpy(novo->nif, nif);
+        strcpy(novo->localizacao, localizacao);
         novo->saldo = 0;
         novo->seguinte = NULL;
 

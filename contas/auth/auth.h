@@ -6,7 +6,7 @@ typedef struct contas Conta;
 typedef struct meios Meio;
 
 void handleLogin(Conta *contas, Meio *meios, Grafo *grafo);
-void handleRegisto(Conta *contas, int who);
+void handleRegisto(Conta *contas, int who, Grafo *grafo);
 
 Conta *login(Conta *contas, char email[], char pass[]);
-void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[], char tipo[]);
+void registo(Conta *contas, char email[], char pass[], char nome[], char morada[], char nif[], char tipo[], char localizacao[]);

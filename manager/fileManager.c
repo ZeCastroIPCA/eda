@@ -8,7 +8,7 @@
 #include "../grafos/grafo.h"
 
 // inserir conta no ficheiro
-Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id)
+Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char pass[], char nome[], char morada[], char nif[], float saldo, int meio_id, char localizacao[])
 {
   if (!existeConta(contas, cod))
   {
@@ -26,6 +26,7 @@ Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char 
         strcpy(novo->nif, nif);
         novo->saldo = saldo;
         novo->meio_id = meio_id;
+        strcpy(novo->localizacao, localizacao);
       }
       else
       {
@@ -34,6 +35,7 @@ Conta *inserirContaFile(Conta *contas, int cod, char tipo[], char email[], char 
         strcpy(novo->nif, "n/a");
         novo->saldo = 0;
         novo->meio_id = 0;
+        strcpy(novo->localizacao, "n/a");
       }
 
       novo->seguinte = contas;

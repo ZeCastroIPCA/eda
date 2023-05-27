@@ -5,6 +5,7 @@
 #include "conta.h"
 #include "../../manager/fileManager.h"
 #include "../../meios/meio.h"
+#include "../../grafos/grafo.h"
 
 // ler contas
 Conta *lerContas()
@@ -12,7 +13,7 @@ Conta *lerContas()
   FILE *fp;
   int cod;
   float saldo;
-  char tipo[50], email[50], pass[50], nome[50], morada[50], nif[9];
+  char tipo[50], email[50], pass[50], nome[50], morada[50], nif[9], localizacao[100];
   int meio_id;
   Conta *aux = NULL;
   fp = fopen("./storage/contas.txt", "r");
@@ -24,10 +25,10 @@ Conta *lerContas()
       printf("\nContas disponíveis:\n");
       while (!feof(fp))
       {
-        fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d \n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &meio_id);
-        aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, meio_id);
+        fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d;%s\n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &meio_id, localizacao);
+        aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, meio_id, localizacao);
         novo = aux;
-        printf("%d %s %s %s %s %s %s %.2f %d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
+        printf("%d %s %s %s %s %s %s %.2f %d %s\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id, aux->localizacao);
       }
       fclose(fp);
     }
@@ -48,8 +49,8 @@ void guardarContas(Conta *contas)
     {
       while (aux != NULL)
       {
-        fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
-        fprintf(fpb, "%d;%s;%s;%s;%s;%s;%s;%f;%d\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id);
+        fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%f;%d;%s\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id, aux->localizacao);
+        fprintf(fpb, "%d;%s;%s;%s;%s;%s;%s;%f;%d;%s\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id, aux->localizacao);
         aux = aux->seguinte;
       }
     }
@@ -82,17 +83,18 @@ void listarContas(Conta *contas, char tipo[])
     if (!strcmp(tipo, "cliente"))
     {
       printf("\n-- LISTA DE CLIENTES ------------------\n");
-      printf("---------------------------------------\n");
-      printf("| ID | Nome       |  Saldo  | ID Meio |\n");
-      printf("---------------------------------------\n");
+      printf("-------------------------------------------------------------------\n");
+      printf("| ID | Nome       |  Saldo  | ID Meio | Localização               |\n");
+      printf("-------------------------------------------------------------------\n");
       while (contas != NULL)
       {
         if (!strcmp(contas->tipo, "cliente"))
         {
-          printf("| %-2d | %-10s | %6.2f€ | %-7d |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id);
+          printf("| %-2d | %-10s | %6.2f€ | %-7d | %-25s |\n", contas->codigo, contas->nome, contas->saldo, contas->meio_id, contas->localizacao);
         }
         contas = contas->seguinte;
       }
+      printf("-------------------------------------------------------------------\n");
     }
     else
     {
@@ -107,16 +109,17 @@ void listarContas(Conta *contas, char tipo[])
           printf("| %-2d | %-30s |\n", contas->codigo, contas->email);
         }
         contas = contas->seguinte;
+        printf("---------------------------------------\n");
       }
     }
   }
-  printf("---------------------------------------\n");
 }
 
 // Alterar uma conta a partir do seu código
-void alterarConta(Conta *contas)
+void alterarConta(Conta *contas, Grafo *grafo)
 {
   int id;
+  char geoCode[100];
 
   listarContas(contas, "cliente");
 
@@ -143,6 +146,18 @@ void alterarConta(Conta *contas)
   scanf("%s", aux->nif);
   printf("Saldo: ");
   scanf("%f", &aux->saldo);
+  printf("GeoCode: ");
+  scanf("%99s", geoCode);
+
+  // Verificar se existe uma localização com o geocódigo inserido
+  while (!existeVertice(grafo, geoCode))
+  {
+    printf("Não existe nenhuma localização com o geocódigo %s!\n", geoCode);
+    printf("Insira um geocódigo válido:");
+    scanf("%99s", geoCode);
+  }
+  // aux->localizacao = (char *)malloc(sizeof(char) * (strlen(geoCode) + 1));
+  strcpy(aux->localizacao, geoCode);
 
   printf("\nInformações do cliente %d alteradas com sucesso!\n", id);
 }
@@ -223,9 +238,9 @@ void removerConta(Conta *contas, int cod, int who)
   }
 }
 
-void alugarMeio(Conta *contas, Conta *conta, Meio *meios)
+void alugarMeio(Conta *contas, Conta *conta, Meio *meios, Grafo *grafo)
 {
-  int conta_op, aluguer_op, meio_cod;
+  int conta_op, aluguer_op, pesquisa_op, meio_cod;
 
   // variável auxiliar da conta do cliente
   Conta *conta_aux = conta;
@@ -263,12 +278,32 @@ void alugarMeio(Conta *contas, Conta *conta, Meio *meios)
       conta_aux->saldo -= tempo_alugado * meio->custo;
       meio->inicio_aluguer = 0;
       printf("\nAluguer terminado com sucesso!\n");
-    } else {
+    }
+    else
+    {
       printf("\nO aluguer do meio %d não foi terminado!\n", conta_aux->meio_id);
     }
     return;
   }
-  listarMeiosParaCliente(meios);
+  printf("Como pretente pesquisar?\n(1 - Pesquisar por Raio | 2 - Pesquisar por Autonomia):");
+  scanf("%d", &pesquisa_op);
+  while (pesquisa_op != 1 && pesquisa_op != 2)
+  {
+    printf("\nOpção inválida! Tente novamente.\n");
+    printf("Como pretente pesquisar?\n(1 - Pesquisar por Raio | 2 - Pesquisar por Autonomia):");
+    scanf("%d", &pesquisa_op);
+  }
+  if (pesquisa_op == 1)
+  {
+    int raio;
+    printf("Qual o raio da pesquisa?\nRaio:");
+    scanf("%d", &raio);
+    listarMeiosPorRaio(conta, grafo, meios, raio);
+  }
+  else
+  {
+    listarMeiosParaCliente(meios);
+  }
   printf("Qual o meio que pretende alugar?\nSerão debitados da sua conta 0,5€\nID do meio:");
   scanf("%d", &meio_cod);
   if (conta_aux->saldo < 0.5)
@@ -288,6 +323,41 @@ void alugarMeio(Conta *contas, Conta *conta, Meio *meios)
   }
   printf("\nO meio que pretende alugar não existe!\n");
   return;
+}
+
+// Listagem de meios por raio
+void listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio)
+{
+  int count = 0;
+
+  printf("\n---  LISTA DE MEIOS ATÉ %.0fm DE %s  ---\n", raio, conta->localizacao);
+  printf("-----------------------------------------------------------------------------------\n");
+  printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   | Distância |\n");
+  printf("-----------------------------------------------------------------------------------\n");
+
+  Grafo *grafoAux = grafo;
+  while (grafoAux != NULL)
+  {
+    while (grafoAux->adjacentes != NULL)
+    {
+      if (grafoAux->adjacentes->peso <= raio)
+      {
+        while (grafoAux->meios != NULL)
+        {
+          printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s | %7.0f m |\n", grafoAux->meios->codigo, grafoAux->meios->tipo, grafoAux->meios->bateria, grafoAux->meios->autonomia, grafoAux->vertice, grafoAux->adjacentes->peso);
+          count++;
+          grafoAux->meios = grafoAux->meios->seguinte;
+        }
+      }
+      grafoAux->adjacentes = grafoAux->adjacentes->seguinte;
+    }
+    grafoAux = grafoAux->seguinte;
+  }
+  if (grafoAux == NULL && count == 0)
+  {
+    printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, conta->localizacao);
+  }
+  printf("-----------------------------------------------------------------------------------\n");
 }
 
 // Carregar saldo na conta

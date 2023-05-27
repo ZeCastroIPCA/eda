@@ -90,12 +90,14 @@ void guardarGrafo(Grafo *grafo)
         Grafo *aux = grafo;
         while (aux != NULL)
         {
+            //printf("%s\n", aux->vertice);
             fprintf(fp, "%s\n", aux->vertice);
             fprintf(fpb, "%s\n", aux->vertice);
 
             Adjacente *adj = aux->adjacentes;
             while (adj != NULL)
             {
+                //printf("_%s;%.2f\n", adj->vertice, adj->peso);
                 fprintf(fp, "_%s;%.2f\n", adj->vertice, adj->peso);
                 fprintf(fpb, "_%s;%.2f\n", adj->vertice, adj->peso);
                 adj = adj->seguinte;
@@ -104,6 +106,7 @@ void guardarGrafo(Grafo *grafo)
             Meio *meio = aux->meios;
             while (meio != NULL)
             {
+                //printf("%d;%s;%.2f;%.2f\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia);
                 fprintf(fp, "%d;%s;%.2f;%.2f\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia);
                 fprintf(fpb, "%d;%s;%.2f;%.2f\n", meio->codigo, meio->tipo, meio->bateria, meio->autonomia);
                 meio = meio->seguinte;
