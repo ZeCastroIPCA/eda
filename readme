@@ -1,4 +1,11 @@
 Este ficheiro contém links úteis para a interpretação do projeto.
+De relembrar que existem 3 funções que não estou a funcionar corretamente:
+- `recolherMeios()`: Não está a passar por todos os vértices;
+- `inserirMeio()`: Após voltar ao menu anterior, não volta o meio salvo desaparece da lista ligada;
+- `criarVertice()`: Após voltar ao menu anterior, não volta o vértice salvo desaparece da lista ligada.
+
+Apesar de não estarem a funcionar corretamente, o programa não crasha e é possível continuar a utilizar as outras funções.
+Mesmo aquelas que dependem destas 3 funções.
 
 Trello: https://trello.com/b/ad3Ng5Zc/projeto-eda
 Github: https://github.com/ZeCastroIPCA/eda
