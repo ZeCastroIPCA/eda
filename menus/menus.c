@@ -50,29 +50,29 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 	int op;
 	do
 	{
-		// TESTING - Listar todos os meios no vértice
-		Grafo *grafoAux = grafo;
-		while (strcmp(grafoAux->vertice, "///porto.porto.porto") != 0)
-		{
-			grafoAux = grafoAux->seguinte;
-		}
+		// // TESTING - Listar todos os meios no vértice
+		// Grafo *grafoAux = grafo;
+		// while (strcmp(grafoAux->vertice, "///porto.porto.porto") != 0)
+		// {
+		// 	grafoAux = grafoAux->seguinte;
+		// }
 
-		Meio *meiosAuxTest = grafoAux->meios;
-		printf("\n-- GRAFO --\n");
-		while (meiosAuxTest != NULL)
-		{
-			printf("%d %s\n", meiosAuxTest->codigo, meiosAuxTest->tipo);
-			meiosAuxTest = meiosAuxTest->seguinte;
-		}
+		// Meio *meiosAuxTest = grafoAux->meios;
+		// printf("\n-- GRAFO --\n");
+		// while (meiosAuxTest != NULL)
+		// {
+		// 	printf("%d %s\n", meiosAuxTest->codigo, meiosAuxTest->tipo);
+		// 	meiosAuxTest = meiosAuxTest->seguinte;
+		// }
 
-		// TESTING - Listar todos os meios na lista ligada dos meios
-		Meio *meiosMain = meios;
-		printf("\n-- MEIOS --\n");
-		while (meiosMain != NULL)
-		{
-			printf("%d %s\n", meiosMain->codigo, meiosMain->tipo);
-			meiosMain = meiosMain->seguinte;
-		}
+		// // TESTING - Listar todos os meios na lista ligada dos meios
+		// Meio *meiosMain = meios;
+		// printf("\n-- MEIOS --\n");
+		// while (meiosMain != NULL)
+		// {
+		// 	printf("%d %s\n", meiosMain->codigo, meiosMain->tipo);
+		// 	meiosMain = meiosMain->seguinte;
+		// }
 		printf("\n------------------------------\n");
 		printf("|       Gestão de Meios      |\n");
 		printf("------------------------------\n");
@@ -160,6 +160,13 @@ void menuGestorGrafo(Grafo *grafo, Meio *meios)
 	int op;
 	do
 	{
+		// // TESTING - Listar todos os vértices
+		// Grafo *grafoAux = grafo;
+		// while (grafoAux != NULL)
+		// {
+		// 	printf("%s\n", grafoAux->vertice);
+		// 	grafoAux = grafoAux->seguinte;
+		// }
 		printf("\n------------------------------\n");
 		printf("|       Gestão do Grafo      |\n");
 		printf("------------------------------\n");

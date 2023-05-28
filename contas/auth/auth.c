@@ -59,6 +59,15 @@ void handleRegisto(Conta *contas, int who, Grafo *grafo)
   printf("Password: ");
   scanf("%s", password);
   getchar();
+  printf("Localização: ");
+  scanf("%99s", localizacao);
+  // Verificar se existe uma localização com o geocódigo inserido
+  while (!existeVertice(grafo, localizacao))
+  {
+    printf("Não existe nenhuma localização com o geocódigo %s!\n", localizacao);
+    printf("Insira um geocódigo válido:");
+    scanf("%99s", localizacao);
+  }
   if (tipoInt == 456)
   {
     printf("Nome: ");
@@ -67,15 +76,6 @@ void handleRegisto(Conta *contas, int who, Grafo *grafo)
     scanf("%49s", morada);
     printf("NIF: ");
     scanf("%8s", nif);
-    printf("Localização: ");
-    scanf("%99s", localizacao);
-    // Verificar se existe uma localização com o geocódigo inserido
-    while (!existeVertice(grafo, localizacao))
-    {
-      printf("Não existe nenhuma localização com o geocódigo %s!\n", localizacao);
-      printf("Insira um geocódigo válido:");
-      scanf("%99s", localizacao);
-    }
   }
   else
   {

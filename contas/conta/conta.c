@@ -22,13 +22,13 @@ Conta *lerContas()
     Conta *novo = malloc(sizeof(fp));
     if (novo != NULL)
     {
-      printf("\nContas disponíveis:\n");
+      //printf("\nContas disponíveis:\n");
       while (!feof(fp))
       {
         fscanf(fp, "%d;%[^;];%[^;];%[^;];%[^;];%[^;];%[^;];%f;%d;%s\n", &cod, tipo, email, pass, nome, morada, nif, &saldo, &meio_id, localizacao);
         aux = inserirContaFile(aux, cod, tipo, email, pass, nome, morada, nif, saldo, meio_id, localizacao);
         novo = aux;
-        printf("%d %s %s %s %s %s %s %.2f %d %s\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id, aux->localizacao);
+        //printf("%d %s %s %s %s %s %s %.2f %d %s\n", aux->codigo, aux->tipo, aux->email, aux->password, aux->nome, aux->morada, aux->nif, aux->saldo, aux->meio_id, aux->localizacao);
       }
       fclose(fp);
     }

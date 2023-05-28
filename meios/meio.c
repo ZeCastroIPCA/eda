@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <limits.h>
 #include "meio.h"
 #include "../manager/fileManager.h"
 #include "../grafos/grafo.h"
@@ -21,13 +22,13 @@ Meio *lerMeios()
     Meio *novo = malloc(sizeof(fp));
     if (novo != NULL)
     {
-      printf("\nMeios disponíveis:\n");
+      //printf("\nMeios disponíveis:\n");
       while (!feof(fp))
       {
         fscanf(fp, "%d;%[^;];%f;%f;%d;%f;%ld\n", &cod, tipo, &bat, &aut, &id_cliente, &custo, &inicio_aluguer);
         aux = inserirMeioFile(aux, cod, tipo, bat, aut, id_cliente, custo, inicio_aluguer);
         novo = aux;
-        printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
+        //printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       }
       fclose(fp);
     }
@@ -143,7 +144,8 @@ void inserirMeio(Meio **meios, Grafo **grafo)
     novo_meio->custo = custo;
 
     // Adicionar o novo meio no início da lista ligada dos meios
-    novo_meio->seguinte = *meios;
+    Meio *meio = *meios;
+    novo_meio->seguinte = meio;
     *meios = novo_meio;
   }
   else
@@ -263,7 +265,6 @@ void listarMeiosPorGeoCode(Grafo **grafo)
   printf("-----------------------------------------------------------------------\n");
 }
 
-
 // Listagem de meios por raio
 int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char tipo[])
 {
@@ -314,8 +315,6 @@ void alterarMeio(Meio *meios, Grafo *grafo)
     scanf("%s", geocode);
     if (existeVertice(grafo, geocode))
     {
-      // TODO - Alterar o geocode do meio e remover o vértice do grafo
-      //  Remover o meio do grafo e voltar a inserir no novo grafo
       Grafo *grafoAux = grafo;
       Meio *meioAux = grafoAux->meios;
       while (grafoAux != NULL)
@@ -383,7 +382,7 @@ void removerMeio(Meio **meios, Grafo **grafo)
     printf("\nO meio %d foi apagado com sucesso!\n", id);
   }
 
-  // Update the meios list in the graph
+  // Update the meios list in the grafo
   Grafo *grafoAux = *grafo;
   while (grafoAux != NULL)
   {
@@ -430,83 +429,256 @@ Meio *existeMeio(Meio *meios, int cod)
   return (0);
 }
 
-// Recolher todos os meios
+// Recolher todos os meios | Tentativa 1 (não funciona corretamente)
+// void recolherMeios(Meio *meios, Grafo *grafo)
+// {
+// // Definir a capacidade máxima do camião
+// #define CAPACIDADE_CAMIAO 10000
+
+//   // Array de strings trajeto
+//   char trajeto[100][100];
+//   // Array de inteiros para guardar o peso de cada meio
+//   int pesos[100];
+//   // Array de inteiros para guardar a distância entre cada vértice
+//   int distancias[100];
+
+//   // Peso dos tipos de meios
+//   int trotineta = 10, bicicleta = 20, carro = 200, barco = 500, aviao = 1000;
+//   // Tamanho dos arrays
+//   int trajetoLength = 0;
+
+//   Grafo *grafoAux = grafo;
+
+//   // Percorrer todos os vértices do grafo
+//   while (grafoAux != NULL)
+//   {
+//     Meio *meiosAux = grafoAux->meios;
+//     printf("Grafo:%s\n", grafoAux->vertice);
+//     // Percorrer todos os meios do vértice atual
+//     while (meiosAux != NULL)
+//     {
+//       Meio *meio = meios;
+//       printf("Meios Grafo:%d %s %.0f\n", meiosAux->codigo, meiosAux->tipo, meiosAux->bateria);
+//       while (meio != NULL)
+//       {
+//         printf("Meios:%d %s %.0f\n", meio->codigo, meio->tipo, meio->bateria);
+//         if (meio->codigo == meiosAux->codigo)
+//         {
+//           // Verificar se está alugado ou não
+//           if (meiosAux->id_cliente == 0)
+//           {
+//             // Verificar a bateria
+//             if (meiosAux->bateria < 50)
+//             {
+//               // Adicionar vértice ao array de trajeto
+//               strcpy(trajeto[trajetoLength], grafoAux->vertice);
+//               // Adicionar peso ao array de pesos
+//               if (strcmp(meiosAux->tipo, "trotineta") == 0)
+//               {
+//                 pesos[trajetoLength] = trotineta;
+//               }
+//               else if (strcmp(meiosAux->tipo, "bicicleta") == 0)
+//               {
+//                 pesos[trajetoLength] = bicicleta;
+//               }
+//               else if (strcmp(meiosAux->tipo, "carro") == 0)
+//               {
+//                 pesos[trajetoLength] = carro;
+//               }
+//               else if (strcmp(meiosAux->tipo, "barco") == 0)
+//               {
+//                 pesos[trajetoLength] = barco;
+//               }
+//               else if (strcmp(meiosAux->tipo, "aviao") == 0)
+//               {
+//                 pesos[trajetoLength] = aviao;
+//               }
+//               // Adicionar distância ao array de distâncias através da adjacência do vértice
+//               distancias[trajetoLength] = grafoAux->adjacentes->peso;
+
+//               // Incrementar o contador de tamanho do array
+//               trajetoLength++;
+//             }
+//           }
+//           break;
+//         }
+//         meio = meio->seguinte;
+//       }
+
+//       meiosAux = meiosAux->seguinte;
+//     }
+//     grafoAux = grafoAux->seguinte;
+//   }
+
+//   // Algoritmo Vizinho mais Próximo
+//   char trajetoFinal[100][100];
+//   int pesosFinal[100];
+//   int distanciasFinal[100];
+//   int trajetoFinalLength = 0;
+
+//   int visitado[100] = {0};
+//   int posAtual = 0;
+//   visitado[posAtual] = 1;
+//   int capacidadeAtual = 0;
+
+//   for (int i = 0; i < trajetoLength; i++)
+//   {
+//     int proximoVertice = -1;
+//     int menorDistancia = INT_MAX;
+
+//     // Procurar o vértice não visitado mais próximo
+//     for (int j = 0; j < trajetoLength; j++)
+//     {
+//       if (!visitado[j])
+//       {
+//         if (proximoVertice == -1 || distancias[j] < menorDistancia)
+//         {
+//           proximoVertice = j;
+//           menorDistancia = distancias[j];
+//         }
+//       }
+//     }
+
+//     // Verificar se o camião tem capacidade para transportar o meio de mobilidade
+//     if (capacidadeAtual + pesos[proximoVertice] <= CAPACIDADE_CAMIAO)
+//     {
+//       // Adicionar vértice, peso e distância ao trajeto final
+//       strcpy(trajetoFinal[trajetoFinalLength], trajeto[proximoVertice]);
+//       pesosFinal[trajetoFinalLength] = pesos[proximoVertice];
+//       distanciasFinal[trajetoFinalLength] = distancias[proximoVertice];
+//       trajetoFinalLength++;
+
+//       // Marcar o vértice como visitado
+//       visitado[proximoVertice] = 1;
+
+//       // Atualizar a posição atual
+//       posAtual = proximoVertice;
+
+//       // Atualizar a capacidade atual do camião
+//       capacidadeAtual += pesos[proximoVertice];
+//     }
+//   }
+
+//   // Imprimir o trajeto final
+//   int distanciaTotal = 0, pesoTotal = 0;
+//   printf("\nTrajeto a percorrer:\n");
+//   for (int i = 0; i < trajetoFinalLength; i++)
+//   {
+//     if (i != 0)
+//     {
+//       printf("->");
+//     }
+//     printf("%s", trajetoFinal[i]);
+//     printf("\nDistância: %d\n", distanciasFinal[i]);
+//     printf("\nPeso: %d\n", pesosFinal[i]);
+//     distanciaTotal += distanciasFinal[i];
+//     pesoTotal += pesosFinal[i];
+//   }
+//   printf("->%s\n", trajetoFinal[0]);
+//   printf("\nDistância total: %d\n", distanciaTotal);
+//   printf("Peso total: %d\n", pesoTotal);
+//   printf("\nMeios recolhidos com sucesso!\n");
+// }
+
+// Tentativa 2 | (não funciona, faz apenas um vértice)
 void recolherMeios(Meio *meios, Grafo *grafo)
 {
+  // capacidade do camião
+  int capacidade = 100;
 
-  // TODO - Recolher todos os meios de todos os vértices do grafo
-  // Array de strings trajeto
-  char trajeto[100][100];
-  // Array de inteiros para guardar o peso de cada meio
-  int pesos[100];
-  // Array de inteiros para guardar a distância entre cada vértice
-  int distancias[100];
+  int count = 1;
+  int recolhidos = 0;
+  Grafo *vAtual = grafo;
+  Grafo *vPrimeiro = grafo;
 
-  // Peso dos tipos de meios
-  int trotineta = 10, bicicleta = 20, carro = 200, barco = 500, aviao = 1000;
-  // Tamanho dos arrays
-  int trajetoLength = sizeof(trajeto) / sizeof(trajeto[0]);
-  int pesosLength = sizeof(pesos) / sizeof(pesos[0]);
-  int distanciasLength = sizeof(distancias) / sizeof(distancias[0]);
-
-  Meio *meiosAux = meios;
-  Grafo *grafoAux = grafo;
-  while (grafoAux != NULL)
+  // Encontrar o último vértice do grafo
+  Grafo *vAux = grafo;
+  Grafo *vUltimo = NULL;
+  while (vAux != NULL)
   {
-    while (grafoAux->meios != NULL)
+    vUltimo = vAux;
+    vAux = vAux->seguinte;
+  }
+  printf("----  Percurso de recolha  ----\n");
+  printf("---------------------------------------------------\n");
+  printf("| Volta | ID | Bateria | Geocódigo                |\n");
+  printf("---------------------------------------------------\n");
+  while (vAtual != vUltimo)
+  {
+    //printf("Atual: %s\n", vAtual->vertice);
+    if (!vAtual->visitado)
     {
-      // Comparar o codigo do meio com o codigo do grafo
-      if (meiosAux->codigo == grafoAux->meios->codigo)
+      Meio *vAtualMeios = vAtual->meios;
+      while (vAtualMeios != NULL)
       {
-        // Verificar se está alugado ou não
-        if (meiosAux->id_cliente == 0)
+        //printf("Meio Grafo: %d %s\n", vAtualMeios->codigo, vAtualMeios->tipo);
+        Meio *meiosAux = meios;
+        while (meiosAux != NULL && recolhidos < capacidade)
         {
-          // Verificar a bateria
-          if (meiosAux->bateria < 50)
+          //printf("Meio Meio: %d %s\n", meiosAux->codigo, meiosAux->tipo);
+          // Verificar se o meio está alugado
+          if (meiosAux->id_cliente == 0)
           {
-            // Adicionar vertice ao array de trajeto
-            strcpy(trajeto[trajetoLength], grafoAux->vertice);
-            // Adicionar peso ao array de pesos
-            if (strcmp(meiosAux->tipo, "trotineta") == 0)
+            // Verificar se o meio está na mesma localização que o vértice atual (através do código) e se a bateria está abaixo de 50%
+            if (meiosAux->bateria < 50 && meiosAux->codigo == vAtualMeios->codigo)
             {
-              pesos[trajetoLength] = trotineta;
+              recolhidos++;
+              printf("| %-5d | %-2d | %.2f%% | %-25s |\n", count, meiosAux->codigo, meiosAux->bateria, vAtual->vertice);
+              printf("---------------------------------------------------\n");
+              meiosAux->bateria = 100;
+              break;
             }
-            else if (strcmp(meiosAux->tipo, "bicicleta") == 0)
-            {
-              pesos[trajetoLength] = bicicleta;
-            }
-            else if (strcmp(meiosAux->tipo, "carro") == 0)
-            {
-              pesos[trajetoLength] = carro;
-            }
-            else if (strcmp(meiosAux->tipo, "barco") == 0)
-            {
-              pesos[trajetoLength] = barco;
-            }
-            else if (strcmp(meiosAux->tipo, "aviao") == 0)
-            {
-              pesos[trajetoLength] = aviao;
-            }
-            // Adicionar distância ao array de distâncias através da adjacência do vértice
-            distancias[trajetoLength] = grafoAux->adjacentes->peso;
           }
+
+          meiosAux = meiosAux->seguinte;
         }
+
+        // Verificar se o camião está cheio
+        if (recolhidos == capacidade)
+        {
+          count++;
+          recolhidos = 0;
+          vAtual = vPrimeiro;
+
+          // Trocar a variável visitado para 0 em todos os vertices
+          Grafo *limparAux = grafo;
+          while (limparAux != NULL)
+          {
+            limparAux->visitado = 0;
+            limparAux = limparAux->seguinte;
+          }
+          continue;
+        }
+        vAtual->visitado = 1;
+        vAtualMeios = vAtualMeios->seguinte;
       }
-      grafoAux->meios = grafoAux->meios->seguinte;
     }
-    grafoAux = grafoAux->seguinte;
+
+    Grafo *vSeguinte = NULL;
+    Adjacente *adjacentesAux = vAtual->adjacentes;
+    int minDistancia = INT_MAX;
+
+    while (adjacentesAux != NULL)
+    {
+      // Verificar se o vértice adjacente já foi visitado e se a distância (peso) é menor que a distância mínima
+      Grafo *grafoAdj = existeVerticeReturn(grafo, adjacentesAux->vertice);
+      if (!grafoAdj->visitado && adjacentesAux->peso < minDistancia)
+      {
+        minDistancia = adjacentesAux->peso;
+        vSeguinte = grafoAdj;
+      }
+      adjacentesAux = adjacentesAux->seguinte;
+    }
+
+    // O vértice seguinte passa a ser o vértice atual
+    vAtual = vSeguinte;
   }
 
-  // Imprimir o trajeto
-  int distanciaTotal = 0, pesoTotal = 0;
-  printf("\nTrajeto a percorrer:\n");
-  for (size_t i = 0; i < trajetoLength; i++)
+  // Trocar a variável visitado para 0 em todos os vertices
+  Grafo *limparAux = grafo;
+  while (limparAux != NULL)
   {
-    printf("%s\n", trajeto[i]);
-    distanciaTotal += distancias[i];
-    pesoTotal += pesos[i];
+    limparAux->visitado = 0;
+    limparAux = limparAux->seguinte;
   }
-  printf("\nDistância total: %d\n", distanciaTotal);
-  printf("Peso total: %d\n", pesoTotal);
-  printf("\nMeios recolhido com sucesso!\n");
 }

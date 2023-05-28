@@ -17,13 +17,13 @@ Grafo *lerGrafo(Meio *meios)
     fp = fopen("./storage/grafo.txt", "r");
     if (fp != NULL)
     {
-        printf("\nGrafo:\n");
+        //printf("\nGrafo:\n");
         while (fgets(linha, sizeof(linha), fp) != NULL)
         {
             // Remover o \n do fim da linha
             linha[strcspn(linha, "\n")] = '\0';
 
-            printf("%s\n", linha);
+            //printf("%s\n", linha);
 
             if (linha[0] == '/')
             {
@@ -192,6 +192,7 @@ void criarVerticeMan(Grafo **grafo, char novoVertice[])
 // Criar um novo vértice
 void criarVertice(Grafo **grafo)
 {
+    // TODO - Se voltar para o menu principal, desaparece o vértice criado
     char geocode[100];
     printf("Novo Geo Código: ");
     scanf("%s", geocode);
@@ -207,6 +208,7 @@ void criarVertice(Grafo **grafo)
     {
         strcpy(novo->vertice, geocode);
         novo->meios = NULL;
+        
         novo->seguinte = *grafo;
         *grafo = novo;
 
@@ -253,6 +255,19 @@ int existeVertice(Grafo *grafo, char vertice[])
             aux = aux->seguinte;
     }
     return (0);
+}
+
+// Verificar se um vértice existe
+Grafo *existeVerticeReturn(Grafo *grafo, char *vertice)
+{
+  Grafo *aux = grafo;
+  while (aux != NULL)
+  {
+    if (strcmp(aux->vertice, vertice) == 0)
+      return aux;
+    aux = aux->seguinte;
+  }
+  return NULL;
 }
 
 // Criar uma nova aresta manual
@@ -320,7 +335,7 @@ void criarAresta(Grafo **grafo)
         scanf("%f", &peso);
     }
 
-    if (!(strcmp(origem, destino) == 0))
+    if (strcmp(origem, destino) == 0)
     {
         printf("\nNão é possível criar uma aresta com origem e destino iguais!\n");
         return;
