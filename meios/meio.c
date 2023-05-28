@@ -2,6 +2,7 @@
 #include <string.h>
 #include <time.h>
 #include <limits.h>
+#include <float.h>
 #include "meio.h"
 #include "../manager/fileManager.h"
 #include "../grafos/grafo.h"
@@ -22,13 +23,13 @@ Meio *lerMeios()
     Meio *novo = malloc(sizeof(fp));
     if (novo != NULL)
     {
-      //printf("\nMeios disponíveis:\n");
+      // printf("\nMeios disponíveis:\n");
       while (!feof(fp))
       {
         fscanf(fp, "%d;%[^;];%f;%f;%d;%f;%ld\n", &cod, tipo, &bat, &aut, &id_cliente, &custo, &inicio_aluguer);
         aux = inserirMeioFile(aux, cod, tipo, bat, aut, id_cliente, custo, inicio_aluguer);
         novo = aux;
-        //printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
+        // printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       }
       fclose(fp);
     }
@@ -594,29 +595,25 @@ void recolherMeios(Meio *meios, Grafo *grafo)
   // Encontrar o último vértice do grafo
   Grafo *vAux = grafo;
   Grafo *vUltimo = NULL;
-  while (vAux != NULL)
-  {
-    vUltimo = vAux;
-    vAux = vAux->seguinte;
-  }
+
   printf("----  Percurso de recolha  ----\n");
   printf("---------------------------------------------------\n");
   printf("| Volta | ID | Bateria | Geocódigo                |\n");
   printf("---------------------------------------------------\n");
   while (vAtual != vUltimo)
   {
-    //printf("Atual: %s\n", vAtual->vertice);
+    vUltimo = grafo;
     if (!vAtual->visitado)
     {
       Meio *vAtualMeios = vAtual->meios;
       while (vAtualMeios != NULL)
       {
-        //printf("Meio Grafo: %d %s\n", vAtualMeios->codigo, vAtualMeios->tipo);
+        // printf("Meio Grafo: %d %s\n", vAtualMeios->codigo, vAtualMeios->tipo);
         Meio *meiosAux = meios;
         while (meiosAux != NULL && recolhidos < capacidade)
         {
-          //printf("Meio Meio: %d %s\n", meiosAux->codigo, meiosAux->tipo);
-          // Verificar se o meio está alugado
+          // printf("Meio Meio: %d %s\n", meiosAux->codigo, meiosAux->tipo);
+          //  Verificar se o meio está alugado
           if (meiosAux->id_cliente == 0)
           {
             // Verificar se o meio está na mesma localização que o vértice atual (através do código) e se a bateria está abaixo de 50%
@@ -626,6 +623,7 @@ void recolherMeios(Meio *meios, Grafo *grafo)
               printf("| %-5d | %-2d | %.2f%% | %-25s |\n", count, meiosAux->codigo, meiosAux->bateria, vAtual->vertice);
               printf("---------------------------------------------------\n");
               meiosAux->bateria = 100;
+              vAtualMeios->bateria = 100;
               break;
             }
           }
@@ -656,22 +654,40 @@ void recolherMeios(Meio *meios, Grafo *grafo)
 
     Grafo *vSeguinte = NULL;
     Adjacente *adjacentesAux = vAtual->adjacentes;
-    int minDistancia = INT_MAX;
+    float minDistancia = FLT_MAX;
 
     while (adjacentesAux != NULL)
     {
       // Verificar se o vértice adjacente já foi visitado e se a distância (peso) é menor que a distância mínima
       Grafo *grafoAdj = existeVerticeReturn(grafo, adjacentesAux->vertice);
+      // printf("Adjacente: %s\n", grafoAdj->vertice);
+      // printf("Visitado: %d\n", grafoAdj->visitado);
+      // printf("Adj: %s\n", adjacentesAux->vertice);
+      // printf("Peso: %.0f\n", adjacentesAux->peso);
+      // printf("MinDistancia: %.0f\n", minDistancia);
+      // printf("Visitado: %s\n", grafoAdj->visitado ? "true" : "false");
       if (!grafoAdj->visitado && adjacentesAux->peso < minDistancia)
       {
         minDistancia = adjacentesAux->peso;
         vSeguinte = grafoAdj;
       }
+      // if (strcmp(vUltimo->vertice, grafoAdj->vertice) == 0)
+      // {
+      //   minDistancia = adjacentesAux->peso;
+      //   vSeguinte = grafoAdj;
+      // }
       adjacentesAux = adjacentesAux->seguinte;
     }
 
     // O vértice seguinte passa a ser o vértice atual
-    vAtual = vSeguinte;
+    if (vSeguinte != NULL)
+    {
+      vAtual = vSeguinte;
+    }
+    else
+    {
+      vAtual = vPrimeiro;
+    }
   }
 
   // Trocar a variável visitado para 0 em todos os vertices
