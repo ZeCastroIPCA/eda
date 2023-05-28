@@ -94,7 +94,7 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 			listarMeios(meios);
 			break;
 		case 3:
-			listarMeiosPorGeoCode(grafo);
+			listarMeiosPorGeoCode(&grafo);
 			break;
 		case 4:
 			alterarMeio(meios, grafo);
@@ -187,7 +187,7 @@ void menuGestorGrafo(Grafo *grafo, Meio *meios)
 			listarAdjacentes(grafo);
 			break;
 		case 5:
-			listarMeiosPorGeoCode(grafo);
+			listarMeiosPorGeoCode(&grafo);
 			break;
 		case 6:
 			adicionarMeio(&grafo, meios);

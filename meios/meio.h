@@ -20,7 +20,7 @@ typedef struct meios
 void inserirMeio(Meio **meios, Grafo **grafo); // Inserir meio de transporte e adicionar localização com geocódigo no grafo
 void listarMeios(Meio *meios); // listar na consola o conteúdo da lista ligada meios
 int listarMeiosParaCliente(Meio *meios); // listar todos os meios disponíveis para aluguer por ordem descrescente de autonomia
-void listarMeiosPorGeoCode(Grafo *grafo); // listar os meios numa determinada localização
+void listarMeiosPorGeoCode(Grafo **grafo); // listar os meios numa determinada localização
 int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char tipo[]); // listar os meios a um certo raio do cliente
 void alterarMeio(Meio *meios, Grafo *grafo); // Alterar um meio a partir do seu código 
 void removerMeio(Meio **meios, Grafo **grafo); // Remover um meio a partir do seu código

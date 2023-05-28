@@ -227,7 +227,7 @@ int listarMeiosParaCliente(Meio *meios)
 }
 
 // Listagem de meios por geocode
-void listarMeiosPorGeoCode(Grafo *grafo)
+void listarMeiosPorGeoCode(Grafo **grafo)
 {
   char geo[100];
   int count = 0;
@@ -240,28 +240,29 @@ void listarMeiosPorGeoCode(Grafo *grafo)
   printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   |\n");
   printf("-----------------------------------------------------------------------\n");
 
-  Grafo *grafoAux = grafo;
+  Grafo *grafoAux = *grafo;
   while (grafoAux != NULL)
   {
-    while (grafoAux->meios != NULL && strcmp(grafoAux->vertice, geo) == 0)
+    Meio *meiosAux = grafoAux->meios;
+    while (meiosAux != NULL)
     {
-      printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s |\n", grafoAux->meios->codigo, grafoAux->meios->tipo, grafoAux->meios->bateria, grafoAux->meios->autonomia, grafoAux->vertice);
-      count++;
-      grafoAux->meios = grafoAux->meios->seguinte;
-      if (grafoAux->meios == NULL)
+      if (strcmp(grafoAux->vertice, geo) == 0)
       {
-        printf("-----------------------------------------------------------------------\n");
-        return;
+        printf("| %-2d | %-12s | %6.2f%% |  %6.2fKm | %-25s |\n", meiosAux->codigo, meiosAux->tipo, meiosAux->bateria, meiosAux->autonomia, grafoAux->vertice);
+        count++;
       }
+      meiosAux = meiosAux->seguinte;
     }
     grafoAux = grafoAux->seguinte;
   }
-  if (grafoAux == NULL && count == 0)
+
+  if (count == 0)
   {
     printf("|        Não existem meios no Geo Código %-20s         |\n", geo);
   }
   printf("-----------------------------------------------------------------------\n");
 }
+
 
 // Listagem de meios por raio
 int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char tipo[])
