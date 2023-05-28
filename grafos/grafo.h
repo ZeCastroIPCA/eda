@@ -33,8 +33,11 @@ void listarMeiosGrafoNaoExistentes(Grafo *grafo, Meio *meios); // Listar os cód
 void listarMeiosGrafoMan(Grafo *grafo, Meio *meios, char geocodigo[]); // Listar os códigos dos meios de transporte presente numa determinada localização passada por parâmetro
 void adicionarMeio(Grafo **grafo, Meio *meios); // Adicionar um meio de transporte a um geocódigo
 void adicionarMeioMan(Grafo **grafo, Meio *meios, char geocodigo[], int codigo); // Adicionar um meio de transporte a um geocódigo manualmente
+void removerMeioGrafo(Grafo **grafo, int id); // Remover um meio de transporte do seu código
 
 int existeVertice(Grafo *grafo, char vertice[]); // Verificar se um vértice existe
+
+void pesquisaRaio(Grafo* grafo, Meio* meios, char *vertice, float raio, char *tipo, float distancia); // Pesquisa de meios de transporte a um raio de um geocódigo
 
 Grafo *lerGrafo(Meio *meios); // Ler o grafo de um ficheiro
 void guardarGrafo(Grafo *grafo); // Guardar o grafo num ficheiro

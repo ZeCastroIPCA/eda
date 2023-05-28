@@ -50,6 +50,29 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 	int op;
 	do
 	{
+		// TESTING - Listar todos os meios no vértice
+		Grafo *grafoAux = grafo;
+		while (strcmp(grafoAux->vertice, "///porto.porto.porto") != 0)
+		{
+			grafoAux = grafoAux->seguinte;
+		}
+
+		Meio *meiosAuxTest = grafoAux->meios;
+		printf("\n-- GRAFO --\n");
+		while (meiosAuxTest != NULL)
+		{
+			printf("%d %s\n", meiosAuxTest->codigo, meiosAuxTest->tipo);
+			meiosAuxTest = meiosAuxTest->seguinte;
+		}
+
+		// TESTING - Listar todos os meios na lista ligada dos meios
+		Meio *meiosMain = meios;
+		printf("\n-- MEIOS --\n");
+		while (meiosMain != NULL)
+		{
+			printf("%d %s\n", meiosMain->codigo, meiosMain->tipo);
+			meiosMain = meiosMain->seguinte;
+		}
 		printf("\n------------------------------\n");
 		printf("|       Gestão de Meios      |\n");
 		printf("------------------------------\n");
@@ -70,14 +93,14 @@ void menuGestorMeios(Meio *meios, Grafo *grafo)
 		case 2:
 			listarMeios(meios);
 			break;
-		case 3:			
+		case 3:
 			listarMeiosPorGeoCode(grafo);
 			break;
 		case 4:
 			alterarMeio(meios, grafo);
 			break;
 		case 5:
-			removerMeio(meios);
+			removerMeio(&meios, &grafo);
 			break;
 		case 6:
 			recolherMeios(meios, grafo);
@@ -157,7 +180,7 @@ void menuGestorGrafo(Grafo *grafo, Meio *meios)
 		case 2:
 			criarAresta(&grafo);
 			break;
-		case 3:			
+		case 3:
 			listarVertices(grafo);
 			break;
 		case 4:

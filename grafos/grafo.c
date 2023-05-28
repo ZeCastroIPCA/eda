@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <float.h>
 #include "grafo.h"
 #include "../meios/meio.h"
 #include "../manager/fileManager.h"
@@ -40,7 +41,7 @@ Grafo *lerGrafo(Meio *meios)
             // Remover o \n do fim da linha
             linha[strcspn(linha, "\n")] = '\0';
 
-            //printf("%s\n", linha);
+            // printf("%s\n", linha);
 
             if (linha[0] == '/')
             {
@@ -72,7 +73,7 @@ Grafo *lerGrafo(Meio *meios)
         }
 
         fclose(fp);
-        //printf("Grafo carregado do ficheiro com sucesso!\n");
+        // printf("Grafo carregado do ficheiro com sucesso!\n");
         return grafo;
     }
 
@@ -179,8 +180,8 @@ void criarVerticeMan(Grafo **grafo, char novoVertice[])
     {
         strcpy(novo->vertice, novoVertice);
         novo->meios = NULL;
-        novo->seguinte = *grafo; 
-        *grafo = novo;          
+        novo->seguinte = *grafo;
+        *grafo = novo;
     }
     else
     {
@@ -206,8 +207,8 @@ void criarVertice(Grafo **grafo)
     {
         strcpy(novo->vertice, geocode);
         novo->meios = NULL;
-        novo->seguinte = *grafo; 
-        *grafo = novo;           
+        novo->seguinte = *grafo;
+        *grafo = novo;
 
         printf("\nVértice criado com sucesso!\n");
     }
@@ -723,88 +724,82 @@ void adicionarMeio(Grafo **grafo, Meio *meios)
     }
 }
 
-void dijkstra(Grafo* grafo, char vOrigem[])
+// Remover um meio de transporte através do código
+void removerMeioGrafo(Grafo **grafo, int codigo)
 {
-    // Inicializar o array de distâncias
-    int tam = 0;
-    Grafo* grafoAux = grafo;
-    while (grafoAux != NULL) {
-        tam++;
-        grafoAux = grafoAux->seguinte;
-    }
-
-    float distancia[] = (float*)malloc(tam * sizeof(float));
-    for (int i = 0; i < tam; i++) {
-        // FTX_MAX representa a distância máxima possível com um float
-        distancia[i] = FLT_MAX;
-    }
-
-    // Find the vOrigem vertex
-    int verticeOrigem = 0;
-    grafoAux = grafo;
-    while (grafoAux != NULL) {
-        if (strcmp(grafoAux->vertice, vOrigem) == 0) {
-            verticeOrigem = i;
-            break;
-        }
-        grafoAux = grafoAux->seguinte;
-    }
-
-    distancia[verticeOrigem] = 0.0;
-
-    // Create a priority queue for vertices
-    int visitado[] = (int*)malloc(tam * sizeof(int));
-    memset(visitado, 0, tam * sizeof(int));
-
-    // Dijkstra's algorithm
-    for (int count = 0; count < tam - 1; count++) {
-        int minDistancia = FLT_MAX;
-        int minI = 0;
-
-        // Find the vertex with the minimum distancia
-        for (int v = 0; v < tam; v++) {
-            if (visitado[v] == 0 && distancia[v] <= minDistancia) {
-                minDistancia = distancia[v];
-                minI = v;
-            }
-        }
-
-        visitado[minI] = 1;
-
-        // Update distances of the adjacent vertices
-        grafoAux = grafo;
-        for (int i = 0; i < minI; i++) {
-            grafoAux = grafoAux->seguinte;
-        }
-
-        Adjacente* adj = grafoAux->adjacentes;
-        while (adj != NULL) {
-            int adjIndex = 0;
-            Grafo* adjVertex = grafo;
-            while (adjVertex != NULL) {
-                if (strcmp(adjVertex->vertice, adj->vertice) == 0) {
-                    adjIndex = i;
-                    break;
+    Grafo *grafoAux = *grafo;
+    while (grafoAux != NULL)
+    {
+        printf("\n%s\n", grafoAux->vertice);
+        Meio *meioAtual = grafoAux->meios;
+        Meio *meioAnterior = NULL;
+        while (meioAtual != NULL)
+        {
+            if (meioAtual->codigo == codigo)
+            {
+                if (meioAnterior == NULL)
+                {
+                    grafoAux->meios = meioAtual->seguinte;
                 }
-                adjVertex = adjVertex->seguinte;
+                else
+                {
+                    meioAnterior->seguinte = meioAtual->seguinte;
+                }
+                free(meioAtual);
+                printf("\nMeio de transporte %d removido com sucesso!\n", codigo);
+                return;
             }
-
-            if (visitado[adjIndex] == 0 && distancia[minI] != FLT_MAX &&
-                adj->peso + distancia[minI] < distancia[adjIndex]) {
-                distancia[adjIndex] = adj->peso + distancia[minI];
-            }
-
-            adj = adj->seguinte;
+            meioAnterior = meioAtual;
+            meioAtual = meioAtual->seguinte;
         }
+        grafoAux = grafoAux->seguinte;
+    }
+    printf("\nO meio de transporte %d não existe!\n", codigo);
+}
+
+void pesquisaRaio(Grafo *grafo, Meio *meios, char *vertice, float raio, char *tipo, float distancia)
+{
+
+    Grafo *grafoAux = grafo;
+    while (grafoAux != NULL && strcmp(grafoAux->vertice, vertice) != 0)
+    {
+        grafoAux = grafoAux->seguinte;
     }
 
-    // Print the shortest paths
-    printf("Shortest paths from %s:\n", vOrigem);
-    for (int i = 0; i < tam; i++) {
-        printf("%s: %.2f\n", grafo[i].vertice, distancia[i]);
+    if (grafoAux == NULL)
+    {
+        printf("|              O vértice %-20s não   existe no grafo!              |\n", vertice);
+        printf("-----------------------------------------------------------------------------------\n");
+        return;
     }
 
-    // Cleanup
-    free(distancia);
-    free(visitado);
+    Meio *grafoMeios = grafoAux->meios;
+    if (grafoMeios == NULL)
+    {
+        printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, vertice);
+        printf("-----------------------------------------------------------------------------------\n");
+        return;
+    }
+
+    while (grafoMeios != NULL)
+    {
+        Meio *meioAux = existeMeio(meios, grafoMeios->codigo);
+        if (meioAux != NULL && strcmp(meioAux->tipo, tipo) == 0)
+        {
+            printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s | %-3.0f m     |\n", meioAux->codigo, meioAux->tipo, meioAux->bateria, meioAux->autonomia, grafoAux->vertice, distancia);
+            printf("-----------------------------------------------------------------------------------\n");
+        }
+        grafoMeios = grafoMeios->seguinte;
+    }
+
+    Adjacente *grafoAdj = grafoAux->adjacentes;
+    while (grafoAdj != NULL)
+    {
+        float proxDistancia = distancia + grafoAdj->peso;
+        if (proxDistancia <= raio)
+        {
+            pesquisaRaio(grafo, meios, grafoAdj->vertice, raio, tipo, proxDistancia);
+        }
+        grafoAdj = grafoAdj->seguinte;
+    }
 }

@@ -46,7 +46,7 @@ void guardarMeios(Meio *meios)
     Meio *aux = meios;
     while (aux != NULL)
     {
-      // printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
+      printf("%d %s %.2f %.2f %d %.2f %ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fp, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       fprintf(fpb, "%d;%s;%.2f;%.2f;%d;%.2f;%ld\n", aux->codigo, aux->tipo, aux->bateria, aux->autonomia, aux->id_cliente, aux->custo, aux->inicio_aluguer);
       aux = aux->seguinte;
@@ -114,9 +114,8 @@ void inserirMeio(Meio **meios, Grafo **grafo)
     novo->id_cliente = 0;
     novo->custo = custo;
 
-    Grafo *grafoAux = *grafo;
-
     // Procurar o vértice com o geocódigo inserido
+    Grafo *grafoAux = *grafo;
     while (strcmp(grafoAux->vertice, geoCode) != 0)
     {
       grafoAux = grafoAux->seguinte;
@@ -125,40 +124,34 @@ void inserirMeio(Meio **meios, Grafo **grafo)
     // Adicionar o novo meio no início da lista ligada do grafo
     novo->seguinte = grafoAux->meios;
     grafoAux->meios = novo;
-
-    Meio *novo_meio = malloc(sizeof(struct meios));
-    if (novo_meio != NULL)
-    {
-      *novo_meio = *novo;
-      // Adicionar o novo meio no início da lista ligada dos meios
-      novo_meio->seguinte = *meios;
-      *meios = novo_meio;
-    }
-    else
-    {
-      printf("Não foi possível alocar memória para criação de um novo meio!\n");
-    }
-
-    // TESTING - Listar todos os meios no vértice
-    // Meio *meiosAux = grafoAux->meios;
-    // while (meiosAux != NULL)
-    // {
-    //   meiosAux = meiosAux->seguinte;
-    // }
-
-    // // TESTING - Listar todos os meios na lista ligada dos meios
-    // Meio *meiosMain = *meios;
-    // while (meiosMain != NULL)
-    // {
-    //   meiosMain = meiosMain->seguinte;
-    // }
-
-    printf("\nMeio criado com sucesso!\n");
   }
   else
   {
     printf("Não foi possível alocar memória\npara criação de um novo meio!\n");
+    return;
   }
+  // Criar uma cópia do novo meio
+  Meio *novo_meio = malloc(sizeof(struct meios));
+  *novo_meio = *novo;
+  if (novo_meio != NULL)
+  {
+    novo_meio->codigo = cod;
+    strcpy(novo_meio->tipo, tipo);
+    novo_meio->bateria = bateria;
+    novo_meio->autonomia = autonomia;
+    novo_meio->id_cliente = 0;
+    novo_meio->custo = custo;
+
+    // Adicionar o novo meio no início da lista ligada dos meios
+    novo_meio->seguinte = *meios;
+    *meios = novo_meio;
+  }
+  else
+  {
+    printf("Não foi possível alocar memória para criação de um novo meio!\n");
+    return;
+  }
+  printf("\nMeio criado com sucesso!\n");
 }
 
 // Listagem de todos os meios numa tabela formatada
@@ -265,7 +258,7 @@ void listarMeiosPorGeoCode(Grafo *grafo)
   }
   if (grafoAux == NULL && count == 0)
   {
-    printf("|     Não existem meios no Geo Código %-20s     |\n", geo);
+    printf("|        Não existem meios no Geo Código %-20s         |\n", geo);
   }
   printf("-----------------------------------------------------------------------\n");
 }
@@ -280,114 +273,10 @@ int listarMeiosPorRaio(Conta *conta, Grafo *grafo, Meio *meios, float raio, char
   printf("| ID | Tipo         | Bateria | Autonomia | Geocode                   | Distância |\n");
   printf("-----------------------------------------------------------------------------------\n");
 
-  // TODO - Encontrar vértices a uma distância menor que o raio em relação ao vértice da conta
-  Grafo *grafoAux = grafo;
-  while (grafoAux != NULL && strcmp(grafoAux->vertice, conta->localizacao) != 0)
-  {
-    grafoAux = grafoAux->seguinte;
-  }
+  // Percorrer o grafo e listar os meios que estão dentro do raio e que são do tipo pretendido
+  pesquisaRaio(grafo, meios, conta->localizacao, raio, tipo, 0);
 
-  if (grafoAux == NULL)
-  {
-    printf("O vértice %s não existe.\n", conta->localizacao);
-    return count;
-  }
-
-  // Passar pelos meios do vértice da "conta"
-  Meio *meio = grafoAux->meios;
-  while (meio != NULL)
-  {
-    // Verificar se o meio é do tipo pretendido
-    Meio *atualMeio = existeMeio(meios, meio->codigo);
-    if (strcmp(atualMeio->tipo, tipo) == 0)
-    {
-      count++;
-      printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   0 m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, conta->localizacao);
-      printf("-----------------------------------------------------------------------------------\n");
-    }
-    meio = meio->seguinte;
-  }
-
-  // Passar pelos vértices adjacentes ao vértice da "conta"
-  Adjacente *adjacenteAux = grafoAux->adjacentes;
-  while (adjacenteAux != NULL)
-  {
-    // Calcular a distância entre o vértice da "conta" e o vértice adjacente
-    float distancia = adjacenteAux->peso;
-    // Verificar se a distância é menor que o raio
-    if (distancia <= raio)
-    {
-      // Encontrar o vértice adjacente na lista de vértices
-      Grafo *adj = grafo;
-      while (adj != NULL && strcmp(adj->vertice, adjacenteAux->vertice) != 0)
-      {
-        adj = adj->seguinte;
-      }
-
-      if (adj != NULL)
-      {
-        // Passar pelos meios associados ao vértice adj
-        Meio *meio = adj->meios;
-        while (meio != NULL)
-        {
-          // Verificar se o meio corresponde ao tipo desejado
-          Meio *atualMeio = existeMeio(meios, meio->codigo); 
-          if (strcmp(atualMeio->tipo, tipo) == 0)
-          {
-            count++;
-            printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   %-3.0f m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, adj->vertice, distancia);
-            printf("-----------------------------------------------------------------------------------\n");
-          }
-          meio = meio->seguinte;
-        }
-      }
-
-      // Passar pelos adjacentes do vértice adj
-      Adjacente *adjAdj = adj->adjacentes;
-      while (adjAdj != NULL)
-      {
-        // Calcular a distância
-        float totalDistance = distancia + adjAdj->peso;
-
-        // Verificar se a distância está dentro do raio
-        if (totalDistance <= raio)
-        {
-          // Encontrar o vértice adjAdjVertice correspondente no grafo
-          Grafo *adjAdjVertice = grafo;
-          while (adjAdjVertice != NULL && strcmp(adjAdjVertice->vertice, adjAdj->vertice) != 0)
-          {
-            adjAdjVertice = adjAdjVertice->seguinte;
-          }
-
-          if (adjAdjVertice != NULL)
-          {
-            // Passar pelos meios associados ao vértice adjAdjVertice
-            Meio *meio = adjAdjVertice->meios;
-            while (meio != NULL)
-            {
-              // Verificar se o meio corresponde ao tipo desejado
-              Meio *atualMeio = existeMeio(meios, meio->codigo); 
-              if (strcmp(atualMeio->tipo, tipo) == 0)
-              {
-                count++;
-                printf("| %2d | %-12s | %6.2f%% | %6.2f Km | %-25s |   %-3.0f m   |\n", atualMeio->codigo, atualMeio->tipo, atualMeio->bateria, atualMeio->autonomia, adjAdjVertice->vertice, distancia);
-                printf("-----------------------------------------------------------------------------------\n");
-              }
-              meio = meio->seguinte;
-            }
-          }
-        }
-        adjAdj = adjAdj->seguinte;
-      }
-    }
-    adjacenteAux = adjacenteAux->seguinte;
-  }
-  if (count == 0)
-  {
-    printf("|  Não existem meios com raio inferior a %3.0fm no Geo Código %-20s  |\n", raio, conta->localizacao);
-  }
-  printf("-----------------------------------------------------------------------------------\n");
-  return count;
+  return 1;
 }
 
 // Alterar um meio a partir do seu código
@@ -426,49 +315,103 @@ void alterarMeio(Meio *meios, Grafo *grafo)
     {
       // TODO - Alterar o geocode do meio e remover o vértice do grafo
       //  Remover o meio do grafo e voltar a inserir no novo grafo
-      // removerMeioGrafo(grafo, aux->codigo);
-      // inserirMeioPorGeoCode(grafo, geocode);
+      Grafo *grafoAux = grafo;
+      Meio *meioAux = grafoAux->meios;
+      while (grafoAux != NULL)
+      {
+        printf("Vertice: %s\n", grafoAux->vertice);
+        while (meioAux != NULL && meioAux->codigo != id)
+        {
+          printf("Meio: %d %s\n", meioAux->codigo, meioAux->tipo);
+          // Remover o meio do grafo
+          removerMeioGrafo(&grafo, id);
+          // Inserir o meio no novo grafo
+          adicionarMeioMan(&grafo, meios, geocode, id);
+          printf("\nInformações do meio %d alteradas com sucesso!\n", id);
+          return;
+          meioAux = meioAux->seguinte;
+        }
+        grafoAux = grafoAux->seguinte;
+      }
     }
   } while (!existeVertice(grafo, geocode));
 
-  printf("\nInformações do meio %d alteradas com sucesso!\n", id);
+  printf("\nErro na remoção do meio %d!\n", id);
 }
 
 // Remover um meio a partir do seu código
-void removerMeio(Meio *meios)
+void removerMeio(Meio **meios, Grafo **grafo)
 {
   int id;
 
-  listarMeios(meios);
+  listarMeios(*meios);
 
   printf("\nID a eliminar:");
   scanf("%d", &id);
 
-  Meio *anterior = meios, *atual = meios, *aux;
+  Meio *anterior = NULL, *atual = *meios;
+
   if (atual == NULL)
   {
     printf("Não existem meios registados!\n");
     return;
   }
-  if (atual->codigo == id) // remoção do 1º registo
+
+  if (atual->codigo == id) // Remoção do 1º registo
   {
-    aux = atual->seguinte;
+    *meios = atual->seguinte;
     free(atual);
     printf("\nO meio %d foi apagado com sucesso!\n", id);
-    return;
   }
-  while ((atual != NULL) && (atual->codigo != id))
+  else
   {
-    anterior = atual;
-    atual = atual->seguinte;
+    while (atual != NULL && atual->codigo != id)
+    {
+      anterior = atual;
+      atual = atual->seguinte;
+    }
+
+    if (atual == NULL)
+    {
+      printf("\nO meio %d não foi apagado!\n", id);
+      return;
+    }
+
+    anterior->seguinte = atual->seguinte;
+    free(atual);
+    printf("\nO meio %d foi apagado com sucesso!\n", id);
   }
-  if (atual == NULL)
+
+  // Update the meios list in the graph
+  Grafo *grafoAux = *grafo;
+  while (grafoAux != NULL)
   {
-    printf("\nO meio %d não foi apagado!\n", id);
-    return;
+    Meio *meioAtual = grafoAux->meios;
+    Meio *meioAnterior = NULL;
+
+    while (meioAtual != NULL)
+    {
+      if (meioAtual->codigo == id)
+      {
+        if (meioAnterior == NULL)
+        {
+          grafoAux->meios = meioAtual->seguinte;
+        }
+        else
+        {
+          meioAnterior->seguinte = meioAtual->seguinte;
+        }
+        free(meioAtual);
+        break;
+      }
+
+      meioAnterior = meioAtual;
+      meioAtual = meioAtual->seguinte;
+    }
+
+    grafoAux = grafoAux->seguinte;
   }
-  anterior->seguinte = atual->seguinte;
-  free(atual);
+  free(grafoAux);
   printf("\nO meio %d foi apagado com sucesso!\n", id);
 }
 
